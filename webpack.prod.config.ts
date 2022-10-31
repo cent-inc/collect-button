@@ -7,13 +7,14 @@ import Dotenv from 'dotenv-webpack';
 const config: Configuration = {
   mode: 'production',
   entry: {
-    client: './src/index.tsx',
+    index: './src/index.tsx',
     relay: './src/relay/child.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[contenthash].js',
+    filename: '[name].js',
     publicPath: '/',
+    libraryTarget: 'umd',
   },
   module: {
     rules: [
@@ -68,7 +69,7 @@ const config: Configuration = {
     new HtmlWebpackPlugin({
       template: 'template/index.html',
       filename: 'index.html',
-      chunks: ['client'],
+      chunks: ['index'],
     }),
   ],
 };

@@ -14,9 +14,10 @@ const config: Configuration = {
   mode: 'development',
   output: {
     publicPath: '/',
+    libraryTarget: 'umd',
   },
   entry: {
-    client: './src/index.tsx',
+    index: './src/index.tsx',
     relay: './src/relay/child.ts',
   },
   module: {
@@ -73,7 +74,7 @@ const config: Configuration = {
     new HtmlWebpackPlugin({
       template: 'template/index.html',
       filename: 'index.html',
-      chunks: ['client'],
+      chunks: ['index'],
     }),
   ],
   devtool: 'inline-source-map',
