@@ -3,6 +3,8 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
+import { ThemeProvider } from 'styled-components';
+import { LightTheme } from '../styles';
 
 import styled from 'styled-components';
 
@@ -29,7 +31,7 @@ export interface CollectButtonParams {
   buttonText?: string;
 }
 
-export default function CollectButton({
+export function CollectButton({
   centPage,
   assetURL,
   assetTitle,
@@ -192,42 +194,44 @@ export default function CollectButton({
   };
 
   return (
-    <span>
-      {renderButton()}
-      <Modal
-        presented={showLoginModal}
-        loading={waitingOnMagic}
-        title='Collect this NFT'
-        confirmLabel='Collect'
-        onConfirm={login}
-        onClose={() => {
-          setCallCollect(false);
-          setShowLoginModal(false);
-        }}
-      >
-        <Text styleType="text">
-          Verify your email to collect this NFT.
-        </Text>
-        <SEmailInput
-          id="email-input"
-          className="login-email-input"
-          styleType="text"
-          type="email"
-          value={email}
-          placeholder="Enter email"
-          onChange={(e) => {
-            setEmail(e.target.value);
+    <React.StrictMode>
+      <ThemeProvider theme={LightTheme}>
+        {renderButton()}
+        <Modal
+          presented={showLoginModal}
+          loading={waitingOnMagic}
+          title='Collect this NFT'
+          confirmLabel='Collect'
+          onConfirm={login}
+          onClose={() => {
+            setCallCollect(false);
+            setShowLoginModal(false);
           }}
-          onKeyDown={(e) => {
-            const code = e.keyCode || e.which;
-            if (code === 13) {
-              e.preventDefault();
-              login();
-            }
-          }}
-        />
-      </Modal>
-    </span>
+        >
+          <Text styleType="text">
+            Verify your email to collect this NFT.
+          </Text>
+          <SEmailInput
+            id="email-input"
+            className="login-email-input"
+            styleType="text"
+            type="email"
+            value={email}
+            placeholder="Enter email"
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              const code = e.keyCode || e.which;
+              if (code === 13) {
+                e.preventDefault();
+                login();
+              }
+            }}
+          />
+        </Modal>
+      </ThemeProvider>
+    </React.StrictMode>
   );
 };
 
