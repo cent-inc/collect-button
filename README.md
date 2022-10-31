@@ -19,9 +19,9 @@ The Collect Button currently allows you to create freely collectible NFTs.
 
 ## Setup
 
-First, make sure you have a Cent Pages Creator account. This account will be the associated creator of all NFTs, and will have the ability to view email addresses of collectors.
+1. Make sure you have a Cent Pages Creator account. This account will be the associated creator of all NFTs, and will have the ability to view email addresses of collectors.
 
-Second, make sure your third party domain is configured to mint with your Cent page. This is a manual step that currently requires pinging the Cent Team with the domain(s) you intend to use.
+2. Make sure your third party domain is configured to mint with your Cent page. This is a manual step that currently requires pinging the Cent Team with the domain(s) you intend to use.
 
 To create a Collect Button on your site, include the library as a script tag in the HEAD of your site:
 
@@ -34,7 +34,10 @@ Then, you can initialize the button using the global method `createCollectButton
 ```
 window.createCollectButton({ assetURL, assetTitle, assetDescription }, element);
 ```
-
+- assetURL: Unique URL pointing to the asset which can be an image, audio, or video file 
+- assetTitle: Title for the NFT - maximum character length of 
+- assetDescription: Description for the NFT. This will show as 
+- element: the container the Collect button should render inside of. 
 The library takes care of web3 wallet creation, ownership tracking and collection management.
 
 ## Feature ideas (in no apparent order)
