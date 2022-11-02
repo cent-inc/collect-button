@@ -7,8 +7,8 @@ import Dotenv from 'dotenv-webpack';
 const config: Configuration = {
   mode: 'production',
   entry: {
-    index: './src/index.tsx',
-    relay: './src/relay/child.ts',
+    index: './src/index.ts',
+    relay: './src/relay/index.tsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

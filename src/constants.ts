@@ -13,8 +13,16 @@ export const routes = {
 };
 
 export const collectStates = {
-  INITIAL: 0,
-  LOADING: 1,
-  COLLECTED: 2,
-  COLLECTABLE: 3
+  LOADING: '1',
+  COLLECTABLE: '2',
+  COLLECTING: '3',
+  COLLECTED: '4',
+};
+
+export const attrs = {
+  COLLECT_QUEUED: 'data-collect-queued',
+  COLLECT_STATE: 'data-collect-state',
+  ASSET_URL: 'data-asset-url',
+  ASSET_TITLE: 'data-asset-title',
+  ASSET_DESCRIPTION: 'data-asset-description',
 };

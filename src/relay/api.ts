@@ -6,27 +6,7 @@ import {
 
 axios.defaults.withCredentials = true;
 
-window.addEventListener('load', () => {
-  const parentOrigin = getQueryVariable('origin');
-  window.addEventListener('message', (message) => {
-    if (message.origin === parentOrigin) {
-      call(message.data.method, Object.assign(message.data.params || {}, {
-        origin: parentOrigin
-      }));
-    }
-    else if (message.origin === process.env.CENT_APP_ROOT) {
-      if (message.data === 'magic-login-success') {
-        finishLogin(true);
-      }
-      else if (message.data === 'magic-login-failure') {
-        finishLogin(false);
-      }
-    }
-  });
-  setInterval(heartbeat, 100);
-});
-
-function call(method, params) {
+export function call(method, params) {
   switch (method) {
     case methods.USER_STATUS:
       return GET(method, params);
@@ -35,21 +15,19 @@ function call(method, params) {
       return GET(method, params);
     case methods.COLLECT_ASSET:
       return POST(method, params);
-    case methods.LOGIN:
-      return startLogin(params.email);
     default:
       break;
   }
 }
 
-function heartbeat() {
+export function heartbeat() {
   parent.postMessage({
     method: methods.RELAY_HEARTBEAT,
     success: true,
   }, '*');
 }
 
-function finishLogin(success) {
+export function finishLogin(success) {
   document.querySelectorAll('.magic-login-frame').forEach((e) => e.remove());
   parent.postMessage({
     method: methods.LOGIN,
@@ -57,7 +35,7 @@ function finishLogin(success) {
   }, '*');
 }
 
-function startLogin(email) {
+export function startLogin(email) {
   const params = [
     `email=${encodeURIComponent(email)}`,
     `backend=${encodeURIComponent(process.env.CENT_API_ROOT)}`,
@@ -74,6 +52,17 @@ function startLogin(email) {
   iframe.style.zIndex = '10001';
   iframe.style.border = '0';
   document.body.appendChild(iframe);
+}
+
+export function getQueryVariable(variable) {
+  const query = window.location.search.substring(1);
+  const vars = query.split('&');
+  for (let i = 0; i < vars.length; i++) {
+    const pair = vars[i].split('=');
+    if (decodeURIComponent(pair[0]) == variable) {
+      return decodeURIComponent(pair[1]);
+    }
+  }
 }
 
 function POST(method, params) {
@@ -114,15 +103,4 @@ function GET(method, params) {
       result: e.response.data,
     }, '*');
   });
-}
-
-function getQueryVariable(variable) {
-  const query = window.location.search.substring(1);
-  const vars = query.split('&');
-  for (let i = 0; i < vars.length; i++) {
-    const pair = vars[i].split('=');
-    if (decodeURIComponent(pair[0]) == variable) {
-      return decodeURIComponent(pair[1]);
-    }
-  }
 }

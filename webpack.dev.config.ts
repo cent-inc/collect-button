@@ -17,8 +17,8 @@ const config: Configuration = {
     libraryTarget: 'umd',
   },
   entry: {
-    index: './src/index.tsx',
-    relay: './src/relay/child.ts',
+    index: './src/index.ts',
+    relay: './src/relay/index.tsx',
   },
   module: {
     rules: [
