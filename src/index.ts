@@ -47,6 +47,7 @@ window.addEventListener('message', function (message) {
               button.setAttribute(attrs.COLLECT_STATE,
                 result.userCollected === 0 ? collectStates.COLLECTABLE : collectStates.COLLECTED
               );
+              loggedIn = result.userAuthenticated;
             }
             renderButton(button);
           }
@@ -113,7 +114,8 @@ export function createCollectButton (params, container) {
   button.style.position = 'relative';
   button.style.fontSize = '1em';
   button.style.padding = '.5em 1em';
-  button.style.backgroundColor = '#00D893';
+  button.style.backgroundColor = '#000';
+  button.style.color = '#FFF';
   button.style.border = '1px solid black';
   button.style.borderRadius = '6px';
   button.style.cursor = 'pointer';

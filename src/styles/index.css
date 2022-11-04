@@ -36,26 +36,3 @@
   visibility: visible;
   content: 'Collected';
 }
-
-.collect-button::after {
-  margin-left: .5em;
-  font-size: 1.25em;
-  visibility: hidden;
-}
-
-.collect-button[data-collect-state='2']::after {
-  visibility: visible;
-  content: '⬡';
-}
-.collect-button[data-collect-state='2']:hover::after {
-  visibility: visible;
-  content: '⏣';
-}
-.collect-button[data-collect-state='3']::after {
-  visibility: visible;
-  content: '⏣';
-}
-.collect-button[data-collect-state='4']::after {
-  visibility: visible;
-  content: '⬢';
-}
