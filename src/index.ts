@@ -32,7 +32,6 @@ window.addEventListener('message', function (message) {
       case methods.RELAY_HEARTBEAT: {
         buttons.forEach(button => {
           if (!button.getAttribute(attrs.COLLECT_STATE) && button.getAttribute(attrs.ASSET_URL)) {
-            console.log('here');
             button.setAttribute(attrs.COLLECT_STATE, collectStates.LOADING);
             getCollectStatus(button.getAttribute(attrs.ASSET_URL));
             renderButton(button);
@@ -71,9 +70,9 @@ window.addEventListener('message', function (message) {
         break;
       }
       case methods.LOGIN: {
-        centRelayIFrame.style.display = 'none';
         loggedIn = success;
         if (!success) {
+          centRelayIFrame.style.display = 'none';
           buttons.forEach(button => {
             button.removeAttribute(attrs.COLLECT_QUEUED);
             renderButton(button);
@@ -96,6 +95,11 @@ window.addEventListener('message', function (message) {
             renderButton(button);
           });
         }
+        console.log('CENT RELAY >>>', message.data);
+        break;
+      }
+      case methods.REMOVE_FRAME: {
+        centRelayIFrame.style.display = 'none';
         console.log('CENT RELAY >>>', message.data);
         break;
       }

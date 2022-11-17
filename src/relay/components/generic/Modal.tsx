@@ -40,7 +40,7 @@ export interface IModal extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Title shown in upper left of modal
    */
-  title: string;
+  title?: string;
   /**
    * Text for on close secondary action button
    */
@@ -132,7 +132,10 @@ export const Modal = ({
       />
       <SModalContainer className={containerClassname}>
         <SClose disabled={loading} className="fas fa-times" size="df" onClick={closeHandler} />
-        <STitle styleType="headerTwo">{title}</STitle>
+        {
+          title &&
+          <STitle styleType="headerTwo">{title}</STitle>
+        }
         <SModalBody>
           {children}
         </SModalBody>
@@ -215,7 +218,7 @@ export const SModalContainer = styled.div`
   left: 50%;
   transform: translateX(-50%);
   border-radius: ${({ theme }) => theme.Radius.md};
-  padding: ${({ theme }) => theme.Spacing.wide} ${({ theme }) => theme.Spacing.regular};
+  padding: 48px 48px 24px;
   display: flex;
   flex-direction: column;
   max-height: calc(100% - 160px);

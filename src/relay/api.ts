@@ -35,6 +35,13 @@ export function finishLogin(success) {
   }, '*');
 }
 
+export function removeFrame(success) {
+  parent.postMessage({
+    method: methods.REMOVE_FRAME,
+    success,
+  }, '*');
+}
+
 export function startLogin(email) {
   const params = [
     `email=${encodeURIComponent(email)}`,
