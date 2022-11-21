@@ -23,13 +23,12 @@ import {
   Modal,
   IModal,
 } from './generic';
-import CollectSuccess from './CollectSuccess';
 
 export function App(props) {
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [waitingOnMagic, setWaitingOnMagic] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [email, setEmail] = useState('');
 
@@ -78,7 +77,6 @@ export function App(props) {
     return () => window.removeEventListener('message', onApiUpdateRefCallback);
   }, []);
 
-
   return (
     <React.StrictMode>
       <ThemeProvider theme={LightTheme}>
@@ -92,27 +90,16 @@ export function App(props) {
           }}
         >
           <SSignupContainer>
-            <STitle styleType="text">
-              Enter your email address to start collecting NFTs
+            <STitle styleType="headerOne">
+              Enter your email to start collecting
             </STitle>
-            <SText styleType="fieldLabel">
-              You’ll unlock a Cent web3 wallet that your newly minted NFT will go to.
-              Discover what you can do with your new wallet and collection
-              {' '}
-              <SLink
-                href="https://www.cent.co/"
-                target="_blank"
-              >
-                here.
-              </SLink>
-            </SText>
             <SEmailInput
               id="email-input"
               className="login-email-input"
               styleType="text"
               type="email"
               value={email}
-              placeholder="Enter email"
+              placeholder="Email address"
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
@@ -136,6 +123,18 @@ export function App(props) {
             >
               Collect
             </SButton>
+            <SBody styleType="text">
+              You’ll unlock a web3 wallet for your new collection.
+              {' '}
+              <SLink
+                href="https://www.cent.co/"
+                target="_blank"
+              >
+                Discover what you can do
+              </SLink>
+              {' '}
+              with your wallet.
+            </SBody>
             <STerms styleType="fieldLabel">
               By clicking "Collect" you agree to our
               {' '}
@@ -147,23 +146,45 @@ export function App(props) {
               </SLink>
             </STerms>
             <SCentSignature
-              styleType="smallText"
+              styleType="fieldLabel"
               onClick={() => {
                 window.open('https://www.cent.co', '_blank');
               }}
             >
               <Icon className="fa-solid fa-hexagon" size="sm"/>
               {' '}
-              Powered by Cent Pages
+              Powered by Cent
             </SCentSignature>
           </SSignupContainer>
         </Modal>
-        {
-          showSuccess &&
-          <CollectSuccess
-            onClose={onCloseSuccess}
-          />
-        }
+        <Modal
+          presented={showSuccess}
+          onClose={onCloseSuccess}
+        >
+            <STitle styleType="headerOne">
+              Congrats, you've just collected an NFT!
+            </STitle>
+            <SSuccessLink
+              href={`${process.env.CENT_APP_ROOT}/account/collection`}
+              target="_blank"
+            >
+              View your NFT now
+              <SSuccessOpenLink className="fa-solid fa-arrow-up-right-from-square" size="sm" />
+            </SSuccessLink>
+            <SBody styleType="text">
+              We've also sent you an email with a link to your collectible.
+            </SBody>
+            <SCentSignature
+              styleType="fieldLabel"
+              onClick={() => {
+                window.open('https://www.cent.co', '_blank');
+              }}
+            >
+              <Icon className="fa-solid fa-hexagon" size="sm"/>
+              {' '}
+              Powered by Cent
+            </SCentSignature>
+        </Modal>
       </ThemeProvider>
     </React.StrictMode>
   );
@@ -189,17 +210,24 @@ const SText = styled(Text)`
   text-align: center;
 `;
 
+const SBody = styled(SText)`
+  margin-top: 32px;
+`;
+
 const STitle = styled(SText)`
-  font-size: 20px;
+  font-weight: 400;
   margin-bottom: ${({ theme }) => theme.Spacing.regular};
 `;
 
 const STerms = styled(SText)`
-  margin: 24px 0;
+  margin: 24px 0 12px;
+  font-size: 14px;
   color: ${({ theme }) => theme.Colors.gray0};
+
 `;
 
 const SCentSignature = styled(SText)`
+  margin-top: 24px;
   font-weight: 400;
   text-transform: none;
   color: ${({ theme }) => theme.Colors.gray600};
@@ -210,5 +238,22 @@ const SCentSignature = styled(SText)`
 `;
 
 const SEmailInput = styled(Input)`
-  margin: ${({ theme }) => theme.Spacing.wide} 0 ${({ theme }) => theme.Spacing.regular};
+  margin: ${({ theme }) => theme.Spacing.regular} 0;
 `;
+
+// Success Modal
+const SSuccessLink = styled.a`
+  margin-top: 24px;
+  color: ${({ theme }) => theme.Colors.mint600};
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SSuccessOpenLink = styled(Icon)`
+  color: ${({ theme }) => theme.Colors.mint600};
+  margin-left: ${({ theme }) => theme.Spacing.condensed};
+`;
+
