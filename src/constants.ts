@@ -4,6 +4,7 @@ export const methods = {
   COLLECT_STATUS: 'collect-status',
   COLLECT_ASSET: 'collect-asset',
   LOGIN: 'login',
+  REMOVE_FRAME: 'remove-frame',
 }
 export const routes = {
   [methods.USER_STATUS]: 'api/_/user?sessionUser=1',

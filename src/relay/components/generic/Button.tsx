@@ -117,7 +117,7 @@ export const Button = (
 
 const primaryButtonStyle = css`
   background-color: ${({ theme }) => theme.Colors.mint600};
-  color: ${({ theme }) => theme.Colors.gray1000};
+  color: ${({ theme }) => theme.Colors.gray0};
   &:hover {
     background-color: ${({ theme }) => theme.Colors.mint500};
     &:disabled {
