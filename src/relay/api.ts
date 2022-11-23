@@ -23,7 +23,7 @@ export function onMagicLoginFinish() {
 
 export function removeFrame(success) {
   parent.postMessage({
-    method: methods.REMOVE_FRAME,
+    method: methods.HIDE_RELAY,
     success,
   }, '*');
 }

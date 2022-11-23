@@ -6,7 +6,7 @@ export const methods = {
   LOGIN: 'login',
   LOGIN_STATUS: 'login-status',
   VIEW_COLLECTION: 'login-and-nav',
-  REMOVE_FRAME: 'remove-frame',
+  HIDE_RELAY: 'hide-relay',
 }
 export const routes = {
   [methods.USER_STATUS]: 'api/_/user?sessionUser=1',
@@ -24,7 +24,6 @@ export const collectStates = {
 };
 
 export const attrs = {
-  COLLECT_QUEUED: 'data-collect-queued',
   COLLECT_STATE: 'data-collect-state',
   ASSET_URL: 'data-asset-url',
   ASSET_TITLE: 'data-asset-title',

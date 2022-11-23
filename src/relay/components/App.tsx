@@ -210,7 +210,7 @@ export function App(props) {
               Collect
             </SButton>
             <SBody styleType="text">
-              You&apos;ll unlock a web3 wallet for your new collection.
+              You’ll unlock a web3 wallet for your new collection.
               {' '}
               <SLink
                 href="https://www.cent.co/"
@@ -222,7 +222,7 @@ export function App(props) {
               with your wallet.
             </SBody>
             <STerms styleType="fieldLabel">
-              By clicking "Collect" you agree to our
+              By clicking Collect you agree to our
               {' '}
               <SLink
                 href="https://www.cent.co/-/legal/terms"
@@ -261,7 +261,7 @@ export function App(props) {
               Collect
             </SButton>
             <STerms styleType="fieldLabel">
-              By clicking "Collect" you agree to our
+              By clicking Collect you agree to our
               {' '}
               <SLink
                 href="https://www.cent.co/-/legal/terms"
@@ -287,7 +287,7 @@ export function App(props) {
           onClose={onCloseModal}
         >
             <STitle styleType="headerOne">
-              Collected ✅
+              Collected <SIcon className="fa fa-solid fa-hexagon-check" />
             </STitle>
             <SSuccessLink
               href={`${process.env.CENT_API_ROOT}/${routes[methods.VIEW_COLLECTION]}?DIDToken=${encodeURIComponent(DIDToken)}`}
@@ -396,6 +396,10 @@ const SSuccessLink = styled.a`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const SIcon = styled.i`
+  color: ${({ theme }) => theme.Colors.mint600};
 `;
 
 const SSuccessOpenLink = styled(Icon)`

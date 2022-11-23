@@ -32,12 +32,19 @@ To create a Collect Button on your site, include the library as a script tag in 
 Then, you can initialize the button using the global method `createCollectButton`:
 
 ```
-window.createCollectButton({ assetURL, assetTitle, assetDescription }, element);
+window.createCollectButton({
+	assetURL: "<url>"
+	assetTitle: "<title>"
+	assetDescription: "<description>",
+	buttonText: "Collect"
+}, element);
 ```
 - assetURL: Unique URL pointing to the asset which can be an image, audio, or video file 
-- assetTitle: Title for the NFT - maximum character length of 
-- assetDescription: Description for the NFT. This will show as 
+- assetTitle: Title for the NFT. Maximum length of 200 characters
+- assetDescription: Description for the NFT.
+- buttonText: Label to use for the button.
 - element: the container the Collect button should render inside of. 
+
 The library takes care of web3 wallet creation, ownership tracking and collection management.
 
 ## Feature ideas (in no apparent order)

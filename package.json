@@ -1,7 +1,7 @@
 {
   "name": "collect-button",
-  "version": "0.0.5",
-  "description": "Collect Button, by Cent",
+  "version": "0.0.7",
+  "description": "The Collect Button, by Cent",
   "main": "./dist/index.js",
   "unpkg": "./dist/index.js",
   "scripts": {

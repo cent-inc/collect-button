@@ -18,7 +18,6 @@ else {
   document.body.appendChild(centRelayIFrame);
 }
 
-let loggedIn = false;
 window.addEventListener('message', function (message) {
   if (message.origin === process.env.CENT_RELAY_ROOT) {
     const {
@@ -33,42 +32,12 @@ window.addEventListener('message', function (message) {
         buttons.forEach(button => {
           if (!button.getAttribute(attrs.COLLECT_STATE) && button.getAttribute(attrs.ASSET_URL)) {
             button.setAttribute(attrs.COLLECT_STATE, collectStates.COLLECTABLE);
-            // getCollectStatus(button.getAttribute(attrs.ASSET_URL));
           }
         });
         break;
       }
-      case methods.COLLECT_STATUS: {
-        buttons.forEach(button => {
-          if (button.getAttribute(attrs.ASSET_URL) === params.assetURL) {
-            if (success) {
-              button.setAttribute(attrs.COLLECT_STATE,
-                result.userCollected === 0 ? collectStates.COLLECTABLE : collectStates.COLLECTED
-              );
-              loggedIn = result.userAuthenticated;
-            }
-          }
-        });
-        console.log('CENT RELAY >>>', message.data);
-        break;
-      }
-      case methods.COLLECT_ASSET: {
-        buttons.forEach(button => {
-          if (button.getAttribute(attrs.ASSET_URL) === params.assetURL) {
-            if (success) {
-              button.setAttribute(attrs.COLLECT_STATE, collectStates.COLLECTED);
-            }
-            else {
-              getCollectStatus(button.getAttribute(attrs.ASSET_URL));
-            }
-          }
-          console.log('CENT RELAY >>>', message.data);
-        });
-        break;
-      }
-      case methods.REMOVE_FRAME: {
+      case methods.HIDE_RELAY: {
         centRelayIFrame.style.display = 'none';
-        console.log('CENT RELAY >>>', message.data);
         break;
       }
       default:
@@ -82,6 +51,7 @@ export function createCollectButton (params, container) {
   button.setAttribute(attrs.ASSET_URL, params.assetURL);
   button.setAttribute(attrs.ASSET_TITLE, params.assetTitle);
   button.setAttribute(attrs.ASSET_DESCRIPTION, params.assetDescription);
+  button.innerText = params.buttonText || 'Collect';
   button.className = 'collect-button';
   button.style.position = 'relative';
   button.style.fontSize = '1em';
@@ -91,23 +61,15 @@ export function createCollectButton (params, container) {
   button.style.border = '1px solid black';
   button.style.borderRadius = '6px';
   button.style.cursor = 'pointer';
-  button.onclick = onClickHandler;
+  button.onclick = function onClickHandler() {
+    centRelayIFrame.style.display = 'block';
+    collect(
+      this.getAttribute(attrs.ASSET_URL),
+      this.getAttribute(attrs.ASSET_TITLE),
+      this.getAttribute(attrs.ASSET_DESCRIPTION)
+    );
+  };
   container.appendChild(button);
-};
-
-function onClickHandler() {
-  centRelayIFrame.style.display = 'block';
-  collect(
-    this.getAttribute(attrs.ASSET_URL),
-    this.getAttribute(attrs.ASSET_TITLE),
-    this.getAttribute(attrs.ASSET_DESCRIPTION)
-  );
-}
-
-const getCollectStatus = (assetURL) => {
-  sendPostMessage(methods.COLLECT_STATUS, {
-    assetURL,
-  });
 };
 
 const collect = (assetURL, assetTitle, assetDescription) => {
@@ -118,6 +80,6 @@ const collect = (assetURL, assetTitle, assetDescription) => {
   });
 };
 
-function sendPostMessage (method, params) {
-  centRelayIFrame.contentWindow.postMessage({ method, params }, '*');
+const sendPostMessage = (method, params) => {
+  centRelayIFrame.contentWindow.postMessage({ method, params }, process.env.CENT_RELAY_ROOT);
 };

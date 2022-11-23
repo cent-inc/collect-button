@@ -28,5 +28,4 @@
 .collect-button[data-collect-state='3']::before,
 .collect-button[data-collect-state='4']::before {
   visibility: visible;
-  content: 'Collect';
 }
