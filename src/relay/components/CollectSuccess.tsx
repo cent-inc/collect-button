@@ -34,7 +34,7 @@ function CollectSuccess({
       <SIcon className="fas fa-check" size="lg" />
       <div>
         <STitle styleType="headerThree">
-          Congrats, you've just collected an NFT!
+          You've collected this NFT!
         </STitle>
         <SMessage styleType="text">
           We've sent you an email with a link to your collectible.

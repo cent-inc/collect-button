@@ -32,9 +32,8 @@ window.addEventListener('message', function (message) {
       case methods.RELAY_HEARTBEAT: {
         buttons.forEach(button => {
           if (!button.getAttribute(attrs.COLLECT_STATE) && button.getAttribute(attrs.ASSET_URL)) {
-            button.setAttribute(attrs.COLLECT_STATE, collectStates.LOADING);
-            getCollectStatus(button.getAttribute(attrs.ASSET_URL));
-            renderButton(button);
+            button.setAttribute(attrs.COLLECT_STATE, collectStates.COLLECTABLE);
+            // getCollectStatus(button.getAttribute(attrs.ASSET_URL));
           }
         });
         break;
@@ -48,7 +47,6 @@ window.addEventListener('message', function (message) {
               );
               loggedIn = result.userAuthenticated;
             }
-            renderButton(button);
           }
         });
         console.log('CENT RELAY >>>', message.data);
@@ -64,38 +62,8 @@ window.addEventListener('message', function (message) {
               getCollectStatus(button.getAttribute(attrs.ASSET_URL));
             }
           }
-          renderButton(button);
           console.log('CENT RELAY >>>', message.data);
         });
-        break;
-      }
-      case methods.LOGIN: {
-        loggedIn = success;
-        if (!success) {
-          centRelayIFrame.style.display = 'none';
-          buttons.forEach(button => {
-            button.removeAttribute(attrs.COLLECT_QUEUED);
-            renderButton(button);
-          });
-        }
-        else {
-          buttons.forEach(button => {
-            if (button.getAttribute(attrs.COLLECT_QUEUED)) {
-              button.removeAttribute(attrs.COLLECT_QUEUED);
-              button.setAttribute(attrs.COLLECT_STATE, collectStates.COLLECTING);
-              collect(
-                button.getAttribute(attrs.ASSET_URL),
-                button.getAttribute(attrs.ASSET_TITLE),
-                button.getAttribute(attrs.ASSET_DESCRIPTION)
-              );
-            }
-            else {
-              getCollectStatus(button.getAttribute(attrs.ASSET_URL));
-            }
-            renderButton(button);
-          });
-        }
-        console.log('CENT RELAY >>>', message.data);
         break;
       }
       case methods.REMOVE_FRAME: {
@@ -124,46 +92,16 @@ export function createCollectButton (params, container) {
   button.style.borderRadius = '6px';
   button.style.cursor = 'pointer';
   button.onclick = onClickHandler;
-  renderButton(button);
   container.appendChild(button);
 };
 
-function renderButton(button) {
-  switch (button.getAttribute(attrs.COLLECT_STATE)) {
-    case collectStates.COLLECTED: {
-      break;
-    }
-    case collectStates.COLLECTING: {
-      break;
-    }
-    case collectStates.COLLECTABLE: {
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-}
-
 function onClickHandler() {
-  const state = this.getAttribute(attrs.COLLECT_STATE);
-  if (state === collectStates.COLLECTABLE) {
-    if (loggedIn) {
-      this.setAttribute(attrs.COLLECT_STATE, collectStates.COLLECTING);
-      collect(
-        this.getAttribute(attrs.ASSET_URL),
-        this.getAttribute(attrs.ASSET_TITLE),
-        this.getAttribute(attrs.ASSET_DESCRIPTION)
-      )
-    }
-    else {
-      this.setAttribute(attrs.COLLECT_QUEUED, '1');
-      login();
-    }
-  }
-  else if (state === collectStates.COLLECTED) {
-    window.open(`${process.env.CENT_APP_ROOT}/account/collection`, '_blank');
-  }
+  centRelayIFrame.style.display = 'block';
+  collect(
+    this.getAttribute(attrs.ASSET_URL),
+    this.getAttribute(attrs.ASSET_TITLE),
+    this.getAttribute(attrs.ASSET_DESCRIPTION)
+  );
 }
 
 const getCollectStatus = (assetURL) => {
@@ -178,11 +116,6 @@ const collect = (assetURL, assetTitle, assetDescription) => {
     assetTitle,
     assetDescription,
   });
-};
-
-const login = () => {
-  centRelayIFrame.style.display = 'block';
-  sendPostMessage(methods.LOGIN, {});
 };
 
 function sendPostMessage (method, params) {

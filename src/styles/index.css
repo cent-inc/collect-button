@@ -24,15 +24,9 @@
 .collect-button::before {
   visibility: hidden;
 }
-.collect-button[data-collect-state='2']::before {
-  visibility: visible;
-  content: 'Collect';
-}
-.collect-button[data-collect-state='3']::before {
-  visibility: visible;
-  content: 'Collecting';
-}
+.collect-button[data-collect-state='2']::before,
+.collect-button[data-collect-state='3']::before,
 .collect-button[data-collect-state='4']::before {
   visibility: visible;
-  content: 'Collected';
+  content: 'Collect';
 }

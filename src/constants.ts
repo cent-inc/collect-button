@@ -4,13 +4,16 @@ export const methods = {
   COLLECT_STATUS: 'collect-status',
   COLLECT_ASSET: 'collect-asset',
   LOGIN: 'login',
+  LOGIN_STATUS: 'login-status',
+  VIEW_COLLECTION: 'login-and-nav',
   REMOVE_FRAME: 'remove-frame',
 }
 export const routes = {
   [methods.USER_STATUS]: 'api/_/user?sessionUser=1',
   [methods.COLLECT_STATUS]: 'api/_/collect-button/status',
   [methods.COLLECT_ASSET]: 'api/_/collect-button/collect',
-  [methods.LOGIN]: 'magic-login.html',
+  [methods.VIEW_COLLECTION]: 'api/_/collect-button/login-and-nav',
+  [methods.LOGIN]: 'sdk-login.html',
 };
 
 export const collectStates = {

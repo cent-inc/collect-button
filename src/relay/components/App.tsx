@@ -12,6 +12,7 @@ import * as api from '../api';
 
 import {
   methods,
+  routes,
   collectStates,
 } from '../../constants';
 
@@ -24,53 +25,142 @@ import {
   IModal,
 } from './generic';
 
-export function App(props) {
+const PARENT_ORIGIN = api.getQueryVariable('origin');
 
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [waitingOnMagic, setWaitingOnMagic] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+const VIEWS = {
+  LOADING: 'loading',
+  LOGIN: 'login',
+  CONFIRM: 'confirm',
+  SUCCESS: 'success',
+  ERROR: 'error',
+  NONE: 'none'
+};
+
+export function App(props) {
+  const [loading, setLoading] = useState(false);
+  const [checkedLoginStatus, setCheckedLoginStatus] = useState(false);
+  const [view, setView] = useState(VIEWS.NONE);
+  const [DIDToken, setDIDToken] = useState(null);
+  const [assetURL, setAssetURL] = useState(null);
+  const [assetTitle, setAssetTitle] = useState(null);
+  const [assetDescription, setAssetDescription] = useState(null);
 
   const [email, setEmail] = useState('');
 
   useEffect(() => {
     setInterval(api.heartbeat, 100);
+    api.createFrame();
   }, []);
 
   const onApiUpdate = async (message) => {
-    const parentOrigin = api.getQueryVariable('origin');
-    if (message.origin === parentOrigin) {
-      if (message.data.method == methods.LOGIN) {
-        setShowLoginModal(true);
-      }
-      else {
-        api.call(message.data.method, Object.assign(message.data.params || {}, {
-          origin: parentOrigin
-        }));
+    if (message.origin === PARENT_ORIGIN) {
+      if (message.data.method === methods.COLLECT_ASSET) {
+        const { params } = message.data;
+        setLoading(false);
+        setView(VIEWS.LOADING);
+        setAssetURL(params.assetURL);
+        setAssetTitle(params.assetTitle);
+        setAssetDescription(params.assetDescription);
+        const response = await api.GET(methods.COLLECT_STATUS, {
+          assetURL: params.assetURL,
+          DIDToken,
+          origin: PARENT_ORIGIN,
+        });
+        const result = response.data.results;
+        if (result.userAuthenticated) {
+          if (result.userCollected) {
+            setView(VIEWS.SUCCESS);
+          }
+          else if (result.userEligible) {
+            setView(VIEWS.CONFIRM);
+          }
+          else {
+            // User cannot collect this. Define this state
+            setView(VIEWS.ERROR);
+          }
+        }
+        else {
+          setView(VIEWS.LOGIN);
+        }
       }
     }
     else if (message.origin === process.env.CENT_APP_ROOT) {
-      if (message.data === 'magic-login-success') {
-        api.finishLogin(true);
-        setShowLoginModal(false);
-        setWaitingOnMagic(false);
-        setShowSuccess(true);
+      if (message.data.method === methods.LOGIN) {
+        api.onMagicLoginFinish();
+        setLoading(false);
+        const loginSuccessful = message.data.success;
+        if (loginSuccessful) {
+          const DIDToken = message.data.result.DIDToken;
+          setDIDToken(DIDToken);
+          const response = await api.GET(methods.COLLECT_STATUS, {
+            assetURL,
+            DIDToken,
+            origin: PARENT_ORIGIN,
+          });
+          const result = response.data.results;
+          if (result.assetEligible && result.userAuthenticated) {
+            if (result.userCollected) {
+              setView(VIEWS.SUCCESS);
+            }
+            else if (result.userEligible) {
+              await collect();
+            }
+            else {
+              setView(VIEWS.ERROR);
+            }
+          }
+          else {
+            setView(VIEWS.ERROR);
+          }
+        }
       }
-      else if (message.data === 'magic-login-failure') {
-        api.finishLogin(false);
-        setShowLoginModal(false);
-        setWaitingOnMagic(false);
+      else if (message.data.method === methods.LOGIN_STATUS) {
+        const checkSuccessful = message.data.success;
+        if (checkSuccessful) {
+          if (message.data.result.loggedIn) {
+            setDIDToken(message.data.result.DIDToken);
+          }
+        }
+      }
+      else if (message.data.method === methods.RELAY_HEARTBEAT) {
+        if (!checkedLoginStatus) {
+          setCheckedLoginStatus(true);
+          api.checkLoginStatus();
+        }
       }
     }
   };
 
-  const onCloseSuccess = () => {
+  const onCloseModal = () => {
+    setLoading(false);
+    setView(VIEWS.NONE);
+    api.onMagicLoginFinish();
     api.removeFrame(true);
-    setShowSuccess(false)
   }
 
   const onApiUpdateRef = useRef(onApiUpdate);
   const onApiUpdateRefCallback = (e) => onApiUpdateRef.current(e);
   onApiUpdateRef.current = onApiUpdate;
+
+  const collect = async () => {
+    setLoading(true);
+    try {
+      await api.POST(methods.COLLECT_ASSET, {
+        assetURL,
+        assetTitle,
+        assetDescription,
+        DIDToken,
+        origin: PARENT_ORIGIN,
+      });
+      setView(VIEWS.SUCCESS);
+      setLoading(false);
+    }
+    catch (e) {
+      console.log('TCB', e);
+      setView(VIEWS.ERROR);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     window.addEventListener('message', onApiUpdateRefCallback);
@@ -81,17 +171,13 @@ export function App(props) {
     <React.StrictMode>
       <ThemeProvider theme={LightTheme}>
         <Modal
-          presented={showLoginModal}
-          loading={waitingOnMagic}
-          onClose={() => {
-            api.finishLogin(false);
-            setShowLoginModal(false);
-            setWaitingOnMagic(false);
-          }}
+          presented={view === VIEWS.LOGIN}
+          loading={+loading}
+          onClose={onCloseModal}
         >
           <SSignupContainer>
             <STitle styleType="headerOne">
-              Enter your email to start collecting
+              Create your NFT
             </STitle>
             <SEmailInput
               id="email-input"
@@ -107,24 +193,24 @@ export function App(props) {
                 const code = e.keyCode || e.which;
                 if (code === 13) {
                   e.preventDefault();
-                  setWaitingOnMagic(true);
-                  api.startLogin(email);
+                  setLoading(true);
+                  api.startMagicLogin(email);
                 }
               }}
             />
             <SButton
               styleType="primary"
               onClick={() => {
-                setWaitingOnMagic(true);
-                api.startLogin(email);
+                setLoading(true);
+                api.startMagicLogin(email);
               }}
-              loading={waitingOnMagic}
-              disabled={waitingOnMagic}
+              loading={+loading}
+              disabled={loading}
             >
               Collect
             </SButton>
             <SBody styleType="text">
-              You’ll unlock a web3 wallet for your new collection.
+              You&apos;ll unlock a web3 wallet for your new collection.
               {' '}
               <SLink
                 href="https://www.cent.co/"
@@ -158,21 +244,81 @@ export function App(props) {
           </SSignupContainer>
         </Modal>
         <Modal
-          presented={showSuccess}
-          onClose={onCloseSuccess}
+          presented={view === VIEWS.CONFIRM}
+          loading={+loading}
+          onClose={onCloseModal}
+        >
+          <SSignupContainer>
+            <STitle styleType="headerOne">
+              Create your NFT
+            </STitle>
+            <SButton
+              styleType="primary"
+              onClick={collect}
+              loading={+loading}
+              disabled={loading}
+            >
+              Collect
+            </SButton>
+            <STerms styleType="fieldLabel">
+              By clicking "Collect" you agree to our
+              {' '}
+              <SLink
+                href="https://www.cent.co/-/legal/terms"
+                target="_blank"
+              >
+                Terms of Use
+              </SLink>
+            </STerms>
+            <SCentSignature
+              styleType="fieldLabel"
+              onClick={() => {
+                window.open('https://www.cent.co', '_blank');
+              }}
+            >
+              <Icon className="fa-solid fa-hexagon" size="sm"/>
+              {' '}
+              Powered by Cent
+            </SCentSignature>
+          </SSignupContainer>
+        </Modal>
+        <Modal
+          presented={view === VIEWS.SUCCESS}
+          onClose={onCloseModal}
         >
             <STitle styleType="headerOne">
-              Congrats, you've just collected an NFT!
+              Collected ✅
             </STitle>
             <SSuccessLink
-              href={`${process.env.CENT_APP_ROOT}/account/collection`}
+              href={`${process.env.CENT_API_ROOT}/${routes[methods.VIEW_COLLECTION]}?DIDToken=${encodeURIComponent(DIDToken)}`}
               target="_blank"
             >
-              View your NFT now
+              View it in your collection
               <SSuccessOpenLink className="fa-solid fa-arrow-up-right-from-square" size="sm" />
             </SSuccessLink>
             <SBody styleType="text">
-              We've also sent you an email with a link to your collectible.
+              We also sent you an email with instructions for how to access your NFT.
+            </SBody>
+            <SCentSignature
+              styleType="fieldLabel"
+              onClick={() => {
+                window.open('https://www.cent.co', '_blank');
+              }}
+            >
+              <Icon className="fa-solid fa-hexagon" size="sm"/>
+              {' '}
+              Powered by Cent
+            </SCentSignature>
+        </Modal>
+        <Modal
+          presented={view === VIEWS.ERROR}
+          onClose={onCloseModal}
+        >
+            <STitle styleType="headerOne">
+              Unable to Collect NFT
+            </STitle>
+            <SBody styleType="text">
+              Minting is currently unavailable. Please check back soon.
             </SBody>
             <SCentSignature
               styleType="fieldLabel"
@@ -221,7 +367,7 @@ const STitle = styled(SText)`
 
 const STerms = styled(SText)`
   margin: 24px 0 12px;
-  font-size: 14px;
+  font-size: 12px;
   color: ${({ theme }) => theme.Colors.gray0};
 
 `;

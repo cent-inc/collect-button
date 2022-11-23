@@ -6,20 +6,6 @@ import {
 
 axios.defaults.withCredentials = true;
 
-export function call(method, params) {
-  switch (method) {
-    case methods.USER_STATUS:
-      return GET(method, params);
-    case methods.COLLECT_STATUS:
-      console.log(params);
-      return GET(method, params);
-    case methods.COLLECT_ASSET:
-      return POST(method, params);
-    default:
-      break;
-  }
-}
-
 export function heartbeat() {
   parent.postMessage({
     method: methods.RELAY_HEARTBEAT,
@@ -27,12 +13,12 @@ export function heartbeat() {
   }, '*');
 }
 
-export function finishLogin(success) {
-  document.querySelectorAll('.magic-login-frame').forEach((e) => e.remove());
-  parent.postMessage({
-    method: methods.LOGIN,
-    success,
-  }, '*');
+function getCentLoginContainers() {
+  return document.querySelectorAll('iframe.cent-login-container');
+}
+
+export function onMagicLoginFinish() {
+  getCentLoginContainers().forEach((e) => e.remove());
 }
 
 export function removeFrame(success) {
@@ -42,23 +28,44 @@ export function removeFrame(success) {
   }, '*');
 }
 
-export function startLogin(email) {
-  const params = [
-    `email=${encodeURIComponent(email)}`,
-    `backend=${encodeURIComponent(process.env.CENT_API_ROOT)}`,
-    `magicKey=${encodeURIComponent(process.env.CENT_MAGIC_SDK_KEY)}`,
-  ];
-  const iframe = document.createElement('iframe');
-  iframe.className = 'magic-login-frame';
-  iframe.src = `${process.env.CENT_APP_ROOT}/${routes[methods.LOGIN]}?${params.join('&')}`;
-  iframe.style.width = '100%';
-  iframe.style.height = '100%';
-  iframe.style.position = 'fixed';
-  iframe.style.top = '0';
-  iframe.style.left = '0';
-  iframe.style.zIndex = '10001';
-  iframe.style.border = '0';
-  document.body.appendChild(iframe);
+export function createFrame() {
+  const containers = getCentLoginContainers();
+  if (containers.length === 0) {
+    const iframe = document.createElement('iframe');
+    iframe.className = 'cent-login-container';
+    iframe.src = `${process.env.CENT_APP_ROOT}/${routes[methods.LOGIN]}?origin=${encodeURIComponent(window.location.origin)}`;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.position = 'fixed';
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.style.zIndex = '10001';
+    iframe.style.border = '0';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+}
+
+export function startMagicLogin(email) {
+  const iframe = getCentLoginContainers()[0];
+  iframe.style.display = 'block';
+  iframe.contentWindow.postMessage({
+    method: methods.LOGIN,
+    params: {
+      email,
+      backend: process.env.CENT_API_ROOT,
+      magicKey: process.env.CENT_MAGIC_SDK_KEY,
+    }
+  }, process.env.CENT_APP_ROOT);
+}
+
+export function checkLoginStatus() {
+  getCentLoginContainers()[0].contentWindow.postMessage({
+    method: methods.LOGIN_STATUS,
+    params: {
+      magicKey: process.env.CENT_MAGIC_SDK_KEY,
+    }
+  }, process.env.CENT_APP_ROOT);
 }
 
 export function getQueryVariable(variable) {
@@ -72,42 +79,10 @@ export function getQueryVariable(variable) {
   }
 }
 
-function POST(method, params) {
-  return axios.post(`${process.env.CENT_API_ROOT}/${routes[method]}`, params)
-  .then((response) => {
-    parent.postMessage({
-      success: true,
-      method,
-      params,
-      result: response.data.results,
-    }, '*');
-  })
-  .catch((e) => {
-    parent.postMessage({
-      success: false,
-      method,
-      params,
-      result: e.response.data,
-    }, '*');
-  });
+export function POST(method, params) {
+  return axios.post(`${process.env.CENT_API_ROOT}/${routes[method]}`, params);
 }
 
-function GET(method, params) {
+export function GET(method, params) {
   return axios.get(`${process.env.CENT_API_ROOT}/${routes[method]}`, { params })
-  .then((response) => {
-    parent.postMessage({
-      success: true,
-      method,
-      params,
-      result: response.data.results,
-    }, '*');
-  })
-  .catch((e) => {
-    parent.postMessage({
-      success: false,
-      method,
-      params,
-      result: e.response.data,
-    }, '*');
-  });
 }
