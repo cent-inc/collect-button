@@ -87,7 +87,6 @@ export function App(props) {
     else if (message.origin === process.env.CENT_APP_ROOT) {
       if (message.data.method === methods.LOGIN) {
         api.onMagicLoginFinish();
-        setLoading(false);
         const loginSuccessful = message.data.success;
         if (loginSuccessful) {
           const DIDToken = message.data.result.DIDToken;
@@ -113,6 +112,7 @@ export function App(props) {
             setView(VIEWS.ERROR);
           }
         }
+        setLoading(false);
       }
       else if (message.data.method === methods.LOGIN_STATUS) {
         const checkSuccessful = message.data.success;
