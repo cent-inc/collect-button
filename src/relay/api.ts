@@ -18,7 +18,7 @@ function getCentLoginContainers() {
 }
 
 export function onMagicLoginFinish() {
-  getCentLoginContainers().forEach((e) => e.remove());
+  getCentLoginContainers().forEach(iframe => iframe.style.display = 'none');
 }
 
 export function removeFrame(success) {

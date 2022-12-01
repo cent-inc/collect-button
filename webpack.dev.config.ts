@@ -77,6 +77,9 @@ const config: Configuration = {
       chunks: ['index'],
     }),
   ],
+  optimization: {
+    runtimeChunk: 'single',
+  },
   devtool: 'inline-source-map',
   devServer: {
     static: path.join(__dirname, 'static'),

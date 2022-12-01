@@ -103,7 +103,7 @@ export function App(props) {
               setView(VIEWS.SUCCESS);
             }
             else if (result.userEligible) {
-              await collect();
+              await collect(DIDToken);
             }
             else {
               setView(VIEWS.ERROR);
@@ -142,7 +142,7 @@ export function App(props) {
   const onApiUpdateRefCallback = (e) => onApiUpdateRef.current(e);
   onApiUpdateRef.current = onApiUpdate;
 
-  const collect = async () => {
+  const collect = async (DIDToken) => {
     setLoading(true);
     try {
       await api.POST(methods.COLLECT_ASSET, {
@@ -254,7 +254,7 @@ export function App(props) {
             </STitle>
             <SButton
               styleType="primary"
-              onClick={collect}
+              onClick={() => collect(DIDToken)}
               loading={+loading}
               disabled={loading}
             >
