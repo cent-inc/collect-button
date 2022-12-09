@@ -7,6 +7,7 @@ import Dotenv from 'dotenv-webpack';
 const config: Configuration = {
   mode: 'production',
   entry: {
+    button: './src/button.ts',
     index: './src/index.ts',
     relay: './src/relay/index.tsx',
   },
@@ -70,6 +71,11 @@ const config: Configuration = {
       template: 'template/index.html',
       filename: 'index.html',
       chunks: ['index'],
+    }),
+    new HtmlWebpackPlugin({
+      template: 'template/button.html',
+      filename: 'button.html',
+      chunks: ['button'],
     }),
   ],
 };
