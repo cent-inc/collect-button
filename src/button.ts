@@ -22,8 +22,10 @@ if (isTouchDevice()) {
   let lastScrollY = window.scrollY;
   let lastScrollX = window.scrollX;
   window.addEventListener('touchstart', function (e) {
-    isTouching = true;
-    detachButtons();
+    if (!e.target.getAttribute(attrs.ASSET_URL)) {
+      isTouching = true;
+      detachButtons();
+    }
   });
   window.addEventListener('touchend', function (e) {
     isTouching = false;
@@ -85,12 +87,12 @@ function newButton(mobile) {
   span.innerHTML = 'Collect';
   span.setAttribute('style', `
     font-family: Helvetica !important;
-    font-size: 14px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
     background-color: white !important;
     color: black !important;
     cursor: pointer !important;
-    padding: 4px 8px !important;
+    padding: 8px 14px !important;
     border-radius: 500px !important;
     background-clip: padding-box;
     border: 2px solid transparent !important;
@@ -171,7 +173,7 @@ function attachButtons () {
           }
         }
         button.setAttribute(attrs.ASSET_URL, src);
-        button.setAttribute(attrs.ASSET_TITLE, `${e.target.src.split('/').slice(-1)}`);
+        button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
         button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected at ${window.location.href}`);
         button.style.top = Math.round(rect.top + scrollY + 8) + 'px';
         button.style.left = Math.round(rect.left + scrollX + 6) + 'px';

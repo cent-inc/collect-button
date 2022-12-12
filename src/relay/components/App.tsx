@@ -22,6 +22,7 @@ import {
   Input,
   Button,
   Modal,
+  SModalBackground,
   IModal,
 } from './generic';
 
@@ -73,6 +74,7 @@ export function App(props) {
           }
           else if (result.userEligible) {
             setView(VIEWS.CONFIRM);
+            await collect(DIDToken);
           }
           else {
             // User cannot collect this. Define this state
@@ -243,45 +245,10 @@ export function App(props) {
             </SCentSignature>
           </SSignupContainer>
         </Modal>
-        <Modal
-          presented={view === VIEWS.CONFIRM}
-          loading={+loading}
-          onClose={onCloseModal}
-        >
-          <SSignupContainer>
-            <STitle styleType="headerOne">
-              Create your NFT
-            </STitle>
-            <SButton
-              styleType="primary"
-              onClick={() => collect(DIDToken)}
-              loading={+loading}
-              disabled={loading}
-            >
-              Collect
-            </SButton>
-            <STerms styleType="fieldLabel">
-              By clicking Collect you agree to our
-              {' '}
-              <SLink
-                href="https://www.cent.co/-/legal/terms"
-                target="_blank"
-              >
-                Terms of Use
-              </SLink>
-            </STerms>
-            <SCentSignature
-              styleType="fieldLabel"
-              onClick={() => {
-                window.open('https://www.cent.co', '_blank');
-              }}
-            >
-              <Icon className="fa-solid fa-hexagon" size="sm"/>
-              {' '}
-              Powered by Cent
-            </SCentSignature>
-          </SSignupContainer>
-        </Modal>
+        {
+          view === VIEWS.CONFIRM &&
+          <SLoadingModal />
+        }
         <Modal
           presented={view === VIEWS.SUCCESS}
           onClose={onCloseModal}
@@ -335,6 +302,12 @@ export function App(props) {
     </React.StrictMode>
   );
 };
+
+const SLoadingModal = styled(SModalBackground)`
+  background-image: url('/loading-mint.gif');
+  background-position: center;
+  background-repeat: no-repeat;
+`;
 
 const SSignupContainer = styled.div`
   display: flex;

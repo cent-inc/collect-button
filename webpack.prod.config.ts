@@ -3,6 +3,7 @@ import { Configuration } from 'webpack';
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import Dotenv from 'dotenv-webpack';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 const config: Configuration = {
   mode: 'production',
@@ -76,6 +77,11 @@ const config: Configuration = {
       template: 'template/button.html',
       filename: 'button.html',
       chunks: ['button'],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'static' }
+      ]
     }),
   ],
 };
