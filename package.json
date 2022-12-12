@@ -1,6 +1,6 @@
 {
   "name": "collect-button",
-  "version": "0.0.13",
+  "version": "0.0.16",
   "description": "The Collect Button, by Cent",
   "main": "./dist/index.js",
   "unpkg": "./dist/index.js",
@@ -41,7 +41,8 @@
     "webpack-dev-server": "^4.7.4"
   },
   "files": [
-    "dist/*",
+    "dist/*.js",
+    "dist/*.txt",
     "README.md"
   ],
   "repository": {

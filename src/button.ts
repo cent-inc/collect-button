@@ -13,7 +13,7 @@ const mediaButtonMap = {
   ...
  */
 };
-const MIN_DIM = 150;
+const MIN_DIM = 100;
 
 relay.init();
 
@@ -86,9 +86,10 @@ function newButton(mobile) {
   const span = document.createElement('span');
   span.innerHTML = 'Collect';
   span.setAttribute('style', `
-    font-family: Helvetica !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
+    font: 600 12px / 14px Helvetica, sans-serif !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    text-indent: 0 !important;
     background-color: white !important;
     color: black !important;
     cursor: pointer !important;
@@ -155,6 +156,9 @@ function attachButtons () {
             button,
             media: image
           }];
+          button.setAttribute(attrs.ASSET_URL, src);
+          button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
+          button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected at ${window.location.href}`);
         }
         else {
           mediaButtonMap[src].forEach(mb => {
@@ -170,11 +174,11 @@ function attachButtons () {
               button,
               media: image
             });
+            button.setAttribute(attrs.ASSET_URL, src);
+            button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
+            button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected at ${window.location.href}`);
           }
         }
-        button.setAttribute(attrs.ASSET_URL, src);
-        button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
-        button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected at ${window.location.href}`);
         button.style.top = Math.round(rect.top + scrollY + 8) + 'px';
         button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
         showButtonMobile(button);
