@@ -74,7 +74,12 @@ export function App(props) {
           }
           else if (result.userEligible) {
             setView(VIEWS.CONFIRM);
-            await collect(DIDToken);
+            await collect(
+              DIDToken,
+              params.assetURL,
+              params.assetTitle,
+              params.assetDescription,
+            );
           }
           else {
             // User cannot collect this. Define this state
@@ -104,7 +109,12 @@ export function App(props) {
               setView(VIEWS.SUCCESS);
             }
             else if (result.userEligible) {
-              await collect(DIDToken);
+              await collect(
+                DIDToken,
+                assetURL,
+                assetTitle,
+                assetDescription,
+              );
             }
             else {
               setView(VIEWS.ERROR);
@@ -144,7 +154,7 @@ export function App(props) {
   const onApiUpdateRefCallback = (e) => onApiUpdateRef.current(e);
   onApiUpdateRef.current = onApiUpdate;
 
-  const collect = async (DIDToken) => {
+  const collect = async (DIDToken, assetURL, assetTitle, assetDescription) => {
     setLoading(true);
     try {
       await api.POST(methods.COLLECT_ASSET, {
