@@ -17,24 +17,34 @@ Each asset type appears in its own collection on OpenSea.
 
 The Collect Button currently allows you to create freely collectible NFTs.
 
+The library takes care of web3 wallet creation, ownership tracking and collection management.
+
 ## Setup
 
 1. Make sure you have a Cent Pages Creator account. This account will be the associated creator of all NFTs, and will have the ability to view email addresses of collectors.
 
 2. Make sure your third party domain is configured to mint with your Cent page. This is a manual step that currently requires pinging the Cent Team with the domain(s) you intend to use.
 
-To create a Collect Button on your site, include the library as a script tag in the HEAD of your site:
+3. Add the script tag to your site:
+
+To add automatic collecting to all images on your site, include this library as a script tag in the HEAD of your site:
 
 ```
-<script src="https://unpkg.com/collect-button@latest"></script>
+<script src="https://unpkg.com/collect-button@latest/dist/button.js"></script>
 ```
 
-Then, you can initialize the button using the global method `createCollectButton`:
+To add custom Collect Button to specific assets on your site, include the library as a script tag in the HEAD of your site:
+
+```
+<script src="https://unpkg.com/collect-button@latest/dist/index.js"></script>
+```
+
+Then, use custom scripting to initialize the button using the global method `createCollectButton`:
 
 ```
 window.createCollectButton({
-	assetURL: "<url>"
-	assetTitle: "<title>"
+	assetURL: "<url>",
+	assetTitle: "<title>",
 	assetDescription: "<description>",
 	buttonText: "Collect"
 }, element);
@@ -45,7 +55,6 @@ window.createCollectButton({
 - buttonText: Label to use for the button.
 - element: the container the Collect button should render inside of. 
 
-The library takes care of web3 wallet creation, ownership tracking and collection management.
 
 ## Feature ideas (in no apparent order)
 - [ ] Self-service domain management for API access

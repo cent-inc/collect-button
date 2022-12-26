@@ -10,7 +10,6 @@ const config: Configuration = {
   entry: {
     button: './src/button.ts',
     index: './src/index.ts',
-    relay: './src/relay/index.tsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -63,11 +62,6 @@ const config: Configuration = {
       path: process.env.STAGING ? './.env.staging' : './.env.production',
     }),
     new NodePolyfillPlugin(),
-    new HtmlWebpackPlugin({
-      template: 'template/relay.html',
-      filename: 'relay.html',
-      chunks: ['relay'],
-    }),
     new HtmlWebpackPlugin({
       template: 'template/index.html',
       filename: 'index.html',

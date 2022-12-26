@@ -27,10 +27,14 @@ export function createCollectButton (params, container) {
   container.appendChild(button);
 }
 
+export function collectNFT(url, title, description) {
+  relay.collect(url, title, description);
+}
+
 function onClickHandler() {
   relay.collect(
     this.getAttribute(attrs.ASSET_URL),
     this.getAttribute(attrs.ASSET_TITLE),
-    this.getAttribute(attrs.ASSET_DESCRIPTION)
+    this.getAttribute(attrs.ASSET_DESCRIPTION),
   );
 }

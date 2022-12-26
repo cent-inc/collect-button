@@ -5,6 +5,17 @@ import {
 let relayIFrame = null;
 let relayIFrameLoaded = false;
 export function init() {
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
+    _init();
+  }
+  else {
+    window.addEventListener('DOMContentLoaded', _init);
+  }
+}
+function _init() {
   document.querySelectorAll('iframe').forEach(iframe => {
     const src = iframe.src || '';
     if (src.indexOf(process.env.CENT_RELAY_ROOT) === 0) {
@@ -14,7 +25,7 @@ export function init() {
 
   if (!relayIFrame) {
     relayIFrame = document.createElement('iframe');
-    relayIFrame.src = `${process.env.CENT_RELAY_ROOT}/relay.html?origin=${encodeURIComponent(window.location.origin)}`;
+    relayIFrame.src = `${process.env.CENT_RELAY_ROOT}/relay?origin=${encodeURIComponent(window.location.origin)}`;
     relayIFrame.className = 'cent-relay';
     relayIFrame.setAttribute('style', `
       width: 100% !important;

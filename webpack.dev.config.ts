@@ -19,7 +19,6 @@ const config: Configuration = {
   entry: {
     button: './src/button.ts',
     index: './src/index.ts',
-    relay: './src/relay/index.tsx',
   },
   module: {
     rules: [
@@ -57,9 +56,6 @@ const config: Configuration = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
-    alias: {
-      'react/jsx-runtime': require.resolve('react/jsx-runtime'),
-    },
   },
   plugins: [
     new Dotenv({
@@ -67,11 +63,6 @@ const config: Configuration = {
     }),
     new NodePolyfillPlugin(),
     new HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({
-      template: 'template/relay.html',
-      filename: 'relay.html',
-      chunks: ['relay'],
-    }),
     new HtmlWebpackPlugin({
       template: 'template/index.html',
       filename: 'index.html',
