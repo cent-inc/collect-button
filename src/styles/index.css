@@ -9,7 +9,7 @@
   padding: 8px 14px;
   border-radius: 500px;
   background-clip: padding-box;
-  border: 2px solid #02ECA1;
+  border: 2px solid transparent;
   transition: border .5s, opacity .5s;
   position: absolute;
   z-index: 8675310;
@@ -26,7 +26,7 @@
   padding: 8px 14px;
   border-radius: 500px;
   background-clip: padding-box;
-  border: 2px solid #D92D20;
+  border: 2px solid transparent;
   transition: border .5s, opacity .5s;
   position: absolute;
   z-index: 8675310;
@@ -43,7 +43,7 @@
   padding: 8px 14px;
   border-radius: 500px;
   background-clip: padding-box;
-  border: 2px solid black;
+  border: 2px solid transparent;
   transition: border .5s, opacity .5s;
   position: fixed;
   top: 12px;
