@@ -67,7 +67,11 @@ function initCollect() {
       if (success) {
         result.forEach(r => {
           if (!collectButtonMap[r.assetURL]) {
-            collectButtonMap[r.assetURL] = {};
+            collectButtonMap[r.assetURL] = {
+              checked: false,
+              registered: false,
+              references: [],
+            };
           }
           collectButtonMap[r.assetURL].registered = r.registered;
           collectButtonMap[r.assetURL].checked = true;
@@ -135,7 +139,11 @@ function initManage() {
             });
           }
           if (!manageButtonMap[r.assetURL]) {
-            manageButtonMap[r.assetURL] = {};
+            manageButtonMap[r.assetURL] = {
+              checked: false,
+              registered: false,
+              references: [],
+            };
           }
           manageButtonMap[r.assetURL].registered = r.registered;
           manageButtonMap[r.assetURL].checked = true;
