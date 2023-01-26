@@ -140,30 +140,30 @@ function initManage() {
   setInterval(attachManageButtons, 250);
 }
 
-function newCollectButton() {
+function newCollectButton(asset) {
   const span = document.createElement('span');
   span.innerHTML = 'Collect';
   span.className = 'cent-collect-button customize';
   span.addEventListener('click', onClickCollect);
-  document.body.appendChild(span);
+  asset.parentNode.appendChild(span);
   return span;
 }
 
-function newManageButton() {
+function newManageButton(asset) {
   const span = document.createElement('span');
   span.innerHTML = 'Manage';
   span.className = 'cent-manage-button customize';
   span.addEventListener('click', onClickManage);
-  document.body.appendChild(span);
+  asset.parentNode.appendChild(span);
   return span;
 }
 
-function newMintButton() {
+function newMintButton(asset) {
   const span = document.createElement('span');
   span.innerHTML = 'Secure';
   span.className = 'cent-mint-button customize';
   span.addEventListener('click', onClickManage);
-  document.body.appendChild(span);
+  asset.parentNode.appendChild(span);
   return span;
 }
 
@@ -219,7 +219,7 @@ function attachCollectButtons() {
             }
           });
           if (!button) {
-            button = newCollectButton(true);
+            button = newCollectButton(image);
             collectButtonMap[src].references.push({
               media: image,
               button,
@@ -229,8 +229,8 @@ function attachCollectButtons() {
             button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
             button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected on ${window.location.href}`);
           }
-          button.style.top = Math.round(rect.top + scrollY + 7) + 'px';
-          button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
+          button.style.top = Math.round(image.offsetTop + 7) + 'px';
+          button.style.left = Math.round(image.offsetLeft + 6) + 'px';
         }
       }
     }
@@ -278,7 +278,7 @@ function attachManageButtons() {
               }
             });
             if (!button) {
-              button = newManageButton(true);
+              button = newManageButton(image);
               manageButtonMap[src].references.push({
                 media: image,
                 button,
@@ -286,8 +286,8 @@ function attachManageButtons() {
               });
               button.setAttribute(attrs.ASSET_URL, src);
             }
-            button.style.top = Math.round(rect.top + scrollY + 7) + 'px';
-            button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
+            button.style.top = Math.round(image.offsetTop + 7) + 'px';
+            button.style.left = Math.round(image.offsetLeft + 6) + 'px';
           } else {
             let button = null;
             manageButtonMap[src].references.forEach(reference => {
@@ -297,7 +297,7 @@ function attachManageButtons() {
               }
             });
             if (!button) {
-              button = newMintButton(true);
+              button = newMintButton(image);
               manageButtonMap[src].references.push({
                 media: image,
                 button,
@@ -305,8 +305,8 @@ function attachManageButtons() {
               });
               button.setAttribute(attrs.ASSET_URL, src);
             }
-            button.style.top = Math.round(rect.top + scrollY + 7) + 'px';
-            button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
+            button.style.top = Math.round(image.offsetTop + 7) + 'px';
+            button.style.left = Math.round(image.offsetLeft + 6) + 'px';
           }
         }
       }
