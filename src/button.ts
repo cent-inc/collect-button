@@ -66,6 +66,9 @@ function initCollect() {
     callback: ({ success, result }) => {
       if (success) {
         result.forEach(r => {
+          if (!collectButtonMap[r.assetURL]) {
+            collectButtonMap[r.assetURL] = {};
+          }
           collectButtonMap[r.assetURL].registered = r.registered;
           collectButtonMap[r.assetURL].checked = true;
         });
@@ -127,9 +130,12 @@ function initManage() {
             r.registered === true
           ) {
             manageButtonMap[r.assetURL].references.forEach(ref => {
-              ref.button.innerHTML = 'Manage';
+              ref.button.innerHTML = 'Managed';
               ref.button.className = 'cent-manage-button customize';
             });
+          }
+          if (!manageButtonMap[r.assetURL]) {
+            manageButtonMap[r.assetURL] = {};
           }
           manageButtonMap[r.assetURL].registered = r.registered;
           manageButtonMap[r.assetURL].checked = true;
@@ -151,7 +157,7 @@ function newCollectButton(asset) {
 
 function newManageButton(asset) {
   const span = document.createElement('span');
-  span.innerHTML = 'Manage';
+  span.innerHTML = 'Managed';
   span.className = 'cent-manage-button customize';
   span.addEventListener('click', onClickManage);
   asset.parentNode.appendChild(span);
@@ -160,7 +166,7 @@ function newManageButton(asset) {
 
 function newMintButton(asset) {
   const span = document.createElement('span');
-  span.innerHTML = 'Secure';
+  span.innerHTML = 'Manage';
   span.className = 'cent-mint-button customize';
   span.addEventListener('click', onClickManage);
   asset.parentNode.appendChild(span);
