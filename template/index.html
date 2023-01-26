@@ -1,61 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Collect Test</title>
+    <title>Button Test</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://kit.fontawesome.com/ca00cc0bc3.js" crossorigin="anonymous"></script>
     <style>
       body {
-        background-color: #DDD;
+        background-color: #FAFAFA;
+        color: black;
+        font-family: Helvetica;
       }
       .collectible {
+        display: inline-block;
+        vertical-align: bottom;
         margin-bottom: 1em;
-        background-color: #000000DD;
-        border-radius: 12px;
       }
       .collectible img {
-        padding: 1em;
+        background-color: white;
         box-sizing: border-box;
-        max-width: 100%;
+        max-width: 300px;
+      }
+      .paragraph {
+        text-align: left;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1em 0;
+        font-family: serif;
+        font-size: 1.5em;
       }
     </style>
   </head>
   <body>
-    <div style="max-width: 600px; margin: 0 auto;">
-      <h1>Collect Test</h1>
+    <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+      <h1>Button Test</h1>
+      <p class="paragraph">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet lectus metus. Integer id diam metus. Curabitur ac urna nec velit auctor vestibulum nec non nisi. Vivamus placerat tristique quam eu fermentum. Donec sed nunc nibh. Ut efficitur, nisl a lacinia porta, metus nisl iaculis sem, et maximus felis arcu non ligula. Nunc consequat consectetur magna, id vulputate leo ultricies non. Ut sit amet risus at leo tincidunt euismod. Donec congue elit sed risus iaculis, id maximus nisl tempor. Nullam congue, ipsum vel feugiat consectetur, massa magna posuere urna, sed congue ex eros ut justo. In nec cursus urna, vitae facilisis ipsum. Donec fermentum, augue vel dapibus pulvinar, leo elit gravida nisi, eu congue libero diam quis turpis. Ut porta sapien et mattis facilisis. Suspendisse id ipsum tempor, volutpat augue ut, molestie lacus. Suspendisse et placerat elit, nec efficitur mauris. Ut vel nunc pharetra, convallis tortor ac, convallis ante.
+      </p>
       <div class="collectible">
-        <img src="/media/famous.png" />
-        <div style="text-align: center" id="collect-1"></div>
+        <img src="/media/knuckle.png" />
         <br />
       </div>
       <div class="collectible">
-        <img src="/media/hive.png" />
-        <div style="text-align: center" id="collect-2"></div>
+        <img src="/media/veggies.png" />
+        <br />
+      </div>
+      <div class="collectible">
+        <img src="/media/statue.png" />
+        <br />
+      </div>
+      <p class="paragraph">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet lectus metus. Integer id diam metus. Curabitur ac urna nec velit auctor vestibulum nec non nisi. Vivamus placerat tristique quam eu fermentum. Donec sed nunc nibh. Ut efficitur, nisl a lacinia porta, metus nisl iaculis sem, et maximus felis arcu non ligula. Nunc consequat consectetur magna, id vulputate leo ultricies non. Ut sit amet risus at leo tincidunt euismod. Donec congue elit sed risus iaculis, id maximus nisl tempor. Nullam congue, ipsum vel feugiat consectetur, massa magna posuere urna, sed congue ex eros ut justo. In nec cursus urna, vitae facilisis ipsum. Donec fermentum, augue vel dapibus pulvinar, leo elit gravida nisi, eu congue libero diam quis turpis. Ut porta sapien et mattis facilisis. Suspendisse id ipsum tempor, volutpat augue ut, molestie lacus. Suspendisse et placerat elit, nec efficitur mauris. Ut vel nunc pharetra, convallis tortor ac, convallis ante.
+      </p>
+      <div class="collectible">
+        <img src="/media/car.png" />
+        <br />
+      </div>
+      <div class="collectible">
+        <img src="/media/wall.png" />
+        <br />
+      </div>
+      <div class="collectible">
+        <img src="/media/train.png" />
+        <br />
+      </div>
+      <p class="paragraph">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet lectus metus. Integer id diam metus. Curabitur ac urna nec velit auctor vestibulum nec non nisi. Vivamus placerat tristique quam eu fermentum. Donec sed nunc nibh. Ut efficitur, nisl a lacinia porta, metus nisl iaculis sem, et maximus felis arcu non ligula. Nunc consequat consectetur magna, id vulputate leo ultricies non. Ut sit amet risus at leo tincidunt euismod. Donec congue elit sed risus iaculis, id maximus nisl tempor. Nullam congue, ipsum vel feugiat consectetur, massa magna posuere urna, sed congue ex eros ut justo. In nec cursus urna, vitae facilisis ipsum. Donec fermentum, augue vel dapibus pulvinar, leo elit gravida nisi, eu congue libero diam quis turpis. Ut porta sapien et mattis facilisis. Suspendisse id ipsum tempor, volutpat augue ut, molestie lacus. Suspendisse et placerat elit, nec efficitur mauris. Ut vel nunc pharetra, convallis tortor ac, convallis ante.
+      </p>
+      <div class="collectible">
+        <img src="/media/flower.png" />
+        <br />
+      </div>
+      <div class="collectible">
+        <img src="/media/buffet.png" />
+        <br />
+      </div>
+      <div class="collectible">
+        <img src="/media/bowl.png" />
         <br />
       </div>
       <br />
       <br />
     </div>
-    <script>
-      window.addEventListener('load', function () {
-
-        window.createCollectButton({
-          centPage: 'collectbutton',
-          assetURL: window.location.origin + '/famous.png',
-          assetTitle: 'Famous',
-          assetDescription: 'Cameron\'s first NFT',
-          buttonText: 'Collect'
-        }, document.getElementById('collect-1'));
-
-        window.createCollectButton({
-          centPage: 'collectbutton',
-          assetURL: window.location.origin + '/hive.png',
-          assetTitle: 'Hive',
-          assetDescription: 'Cameron\'s first Hive',
-          buttonText: 'Collect'
-        }, document.getElementById('collect-2'));
-      });
-    </script>
   </body>
 </html>

@@ -4,18 +4,20 @@ import {
 
 let relayIFrame = null;
 let relayIFrameLoaded = false;
-export function init() {
+export function init(hooks) {
   if (
     document.readyState === "complete" ||
     document.readyState === "interactive"
   ) {
-    _init();
+    _init(hooks);
   }
   else {
-    window.addEventListener('DOMContentLoaded', _init);
+    window.addEventListener('DOMContentLoaded', function () {
+      _init(hooks);
+    });
   }
 }
-function _init() {
+function _init(hooks) {
   document.querySelectorAll('iframe').forEach(iframe => {
     const src = iframe.src || '';
     if (src.indexOf(process.env.CENT_RELAY_ROOT) === 0) {
@@ -48,14 +50,19 @@ function _init() {
         success,
         method,
         params,
-        result
+        result,
       } = message.data;
       switch (method) {
+        case methods.ASSET_STATUS:
+          hooks
+          .filter(hook => hook.eventName === methods.ASSET_STATUS)
+          .forEach(hook => hook.callback({ result, success }));
+          break;
         case methods.RELAY_HEARTBEAT:
           relayIFrameLoaded = true;
           break;
         case methods.HIDE_RELAY: {
-          hideRelayIFrame()
+          hideRelayIFrame();
           break;
         }
         default:
@@ -74,7 +81,7 @@ function hideRelayIFrame() {
   relayIFrame.style.display = 'none';
 }
 
-function waitForLoaded (resolve, reject) {
+function waitForLoaded(resolve, reject) {
   if (relayIFrameLoaded) {
     resolve(relayIFrameLoaded);
   }
@@ -83,7 +90,14 @@ function waitForLoaded (resolve, reject) {
   }
 }
 
-export async function collect (assetURL, assetTitle, assetDescription) {
+export async function lookup(assetURLs) {
+  await new Promise(waitForLoaded);
+  sendPostMessage(methods.ASSET_STATUS, {
+    assetURLs
+  });
+}
+
+export async function collect(assetURL, assetTitle, assetDescription) {
   await new Promise(waitForLoaded);
   showRelayIFrame();
   sendPostMessage(methods.COLLECT_ASSET, {
@@ -93,6 +107,14 @@ export async function collect (assetURL, assetTitle, assetDescription) {
   });
 }
 
-function sendPostMessage (method, params) {
+export async function manage(assetURL) {
+  await new Promise(waitForLoaded);
+  showRelayIFrame();
+  sendPostMessage(methods.MANAGE_ASSET, {
+    assetURL,
+  });
+}
+
+function sendPostMessage(method, params) {
   relayIFrame.contentWindow.postMessage({ method, params }, process.env.CENT_RELAY_ROOT);
 }

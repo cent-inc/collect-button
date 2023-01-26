@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Collect Test</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://kit.fontawesome.com/ca00cc0bc3.js" crossorigin="anonymous"></script>
+    <style>
+      body {
+        background-color: #DDD;
+      }
+      .collectible {
+        margin-bottom: 1em;
+        background-color: #000000DD;
+        border-radius: 12px;
+      }
+      .collectible img {
+        padding: 1em;
+        box-sizing: border-box;
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="max-width: 600px; margin: 0 auto;">
+      <h1>Collect Test</h1>
+      <div class="collectible">
+        <img src="/media/famous.png" />
+        <div style="text-align: center" id="collect-1"></div>
+        <br />
+      </div>
+      <div class="collectible">
+        <img src="/media/hive.png" />
+        <div style="text-align: center" id="collect-2"></div>
+        <br />
+      </div>
+      <br />
+      <br />
+    </div>
+    <script>
+      window.addEventListener('load', function () {
+
+        window.createCollectButton({
+          centPage: 'collectbutton',
+          assetURL: window.location.origin + '/famous.png',
+          assetTitle: 'Famous',
+          assetDescription: 'Cameron\'s first NFT',
+          buttonText: 'Collect'
+        }, document.getElementById('collect-1'));
+
+        window.createCollectButton({
+          centPage: 'collectbutton',
+          assetURL: window.location.origin + '/hive.png',
+          assetTitle: 'Hive',
+          assetDescription: 'Cameron\'s first Hive',
+          buttonText: 'Collect'
+        }, document.getElementById('collect-2'));
+      });
+    </script>
+  </body>
+</html>

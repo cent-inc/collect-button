@@ -4,7 +4,7 @@ import {
 import './styles/index.css'
 import * as relay from './relay';
 
-relay.init();
+relay.init([]);
 
 export function createCollectButton (params, container) {
   const button = document.createElement('button');

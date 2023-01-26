@@ -63,13 +63,13 @@ const config: Configuration = {
     }),
     new NodePolyfillPlugin(),
     new HtmlWebpackPlugin({
-      template: 'template/index.html',
-      filename: 'index.html',
+      template: 'template/custom.html',
+      filename: 'custom.html',
       chunks: ['index'],
     }),
     new HtmlWebpackPlugin({
-      template: 'template/button.html',
-      filename: 'button.html',
+      template: 'template/index.html',
+      filename: 'index.html',
       chunks: ['button'],
     }),
     new CopyWebpackPlugin({

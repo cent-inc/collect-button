@@ -1,0 +1,78 @@
+.cent-manage-button {
+  font: 600 12px / 14px Helvetica, sans-serif;
+  vertical-align: middle;
+  text-align: center;
+  text-indent: 0;
+  background-color: #02ECA1;
+  color: black;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 500px;
+  background-clip: padding-box;
+  border: 2px solid #02ECA1;
+  transition: border .5s, opacity .5s;
+  position: absolute;
+  z-index: 8675310;
+}
+
+.cent-mint-button {
+  font: 600 12px / 14px Helvetica, sans-serif;
+  vertical-align: middle;
+  text-align: center;
+  text-indent: 0;
+  background-color: #D92D20;
+  color: white;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 500px;
+  background-clip: padding-box;
+  border: 2px solid #D92D20;
+  transition: border .5s, opacity .5s;
+  position: absolute;
+  z-index: 8675310;
+}
+
+.cent-exit-button {
+  font: 600 12px / 14px Helvetica, sans-serif;
+  vertical-align: middle;
+  text-align: center;
+  text-indent: 0;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 500px;
+  background-clip: padding-box;
+  border: 2px solid black;
+  transition: border .5s, opacity .5s;
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 8675310;
+}
+
+.cent-exit-logo {
+	position: absolute;
+	top: 2px;
+	left: 5px;
+	height: 24px;
+	filter: invert(1);
+	border-radius: 500px;
+}
+
+.cent-collect-button {
+  font: 600 12px / 14px Helvetica, sans-serif;
+  vertical-align: middle;
+  text-align: center;
+  text-indent: 0;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 500px;
+  background-clip: padding-box;
+  border: 2px solid black;
+  transition: border .5s, opacity .5s;
+  position: absolute;
+  z-index: 8675310;
+}

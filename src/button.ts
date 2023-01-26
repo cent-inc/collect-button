@@ -1,219 +1,360 @@
 import {
   attrs,
+  methods,
 } from './constants';
 import * as relay from './relay';
+import './styles/index.css';
 
-const mediaButtonMap = {
+const collectButtonMap = {
+ /*
+  key: {
+    type: string,
+    checked: boolean,
+    registered: boolean,
+    references: [{
+      button: HTMLElement,
+      media: HTMLElement,
+    }, ...],
+  },
+  ...
+ */
+};
+
+const manageButtonMap = {
  /*
   key: [{
     nonce: number,
-    button: HTMLElement,
+    overlay: HTMLElement,
     media: HTMLElement
   }, ...],
   ...
  */
 };
 const MIN_DIM = 100;
+const hooks = [];
+relay.init(hooks);
 
-relay.init();
+function init() {
+  const activateManager = getQueryVariable('collectManager');
+  if (activateManager || window.localStorage.getItem('collect-manager') === 'true') {
+    window.localStorage.setItem('collect-manager', 'true');
+    if (activateManager) {
+      window.location.replace(window.location.href.replace('?collectManager=1', ''));
+    } else {
+      newExitButton();
+      initManage();
+    }
+  }
+  else {
+    initCollect();
+  }
+}
 
-if (isTouchDevice()) {
-  let isTouching = false;
-  let lastScrollY = window.scrollY;
-  let lastScrollX = window.scrollX;
-  window.addEventListener('touchstart', function (e) {
-    if (!e.target.getAttribute(attrs.ASSET_URL)) {
-      isTouching = true;
-      detachButtons();
-    }
-  });
-  window.addEventListener('touchend', function (e) {
-    isTouching = false;
-  });
-  setInterval(() => {
-    const scrollY = window.scrollY;
-    const scrollX = window.scrollX;
-    if (!isTouching && lastScrollY == scrollY && lastScrollX == scrollX) {
-      attachButtons();
-    }
-    lastScrollY = scrollY;
-    lastScrollX = scrollX;
-  }, 250);
+if (
+  document.readyState === "complete" ||
+  document.readyState === "interactive"
+) {
+  init();
 }
 else {
-  const button = newButton();
-  button.addEventListener('mouseover', showButtonBorderDesktop);
-  button.addEventListener('mouseout', hideButtonBorderDesktop);
-  let clientY = -1;
-  let clientX = -1;
-  window.addEventListener('mousemove', function (e) {
-    clientY = e.clientY;
-    clientX = e.clientX;
-    if (e.target.nodeName === 'IMG') {
-      const rect = e.target.getBoundingClientRect();
-      if (rect.width >= MIN_DIM && rect.height >= MIN_DIM) {
-        button.style.top = Math.round(rect.top + window.scrollY + 8) + 'px';
-        button.style.left = Math.round(rect.left + window.scrollX + 6) + 'px';
-        button.setAttribute(attrs.ASSET_URL, e.target.src);
-        button.setAttribute(attrs.ASSET_TITLE, `${e.target.src.split('/').slice(-1)}`);
-        button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected at ${window.location.href}`);
-        showButtonDesktop(button);
-      }
-    }
-    else if (e.target !== button) {
-      hideButtonDesktop(button);
-    }
-  });
-  window.addEventListener('scroll', function (e) {
-    if (clientY > -1) {
-      const elt = document.elementFromPoint(clientX, clientY);
-      if (elt.nodeName === 'IMG') {
-        const rect = elt.getBoundingClientRect();
-        if (rect.width >= MIN_DIM && rect.height >= MIN_DIM) {
-          button.style.top = Math.round(rect.top + window.scrollY + 8) + 'px';
-          button.style.left = Math.round(rect.left + window.scrollX + 6) + 'px';
-          showButtonDesktop(button);
-        }
-      }
-      else if (e.target !== button) {
-        hideButtonDesktop(button);
-      }
-    }
-  });
+  window.addEventListener('DOMContentLoaded', init);
 }
 
-function newButton(mobile) {
+function initCollect() {
+  hooks.push({
+    eventName: methods.ASSET_STATUS,
+    callback: ({ success, result }) => {
+      if (success) {
+        result.forEach(r => {
+          collectButtonMap[r.assetURL].registered = r.registered;
+          collectButtonMap[r.assetURL].checked = true;
+        });
+      }
+    }
+  });
+  if (isTouchDevice()) {
+    const touch = {
+      isTouching: false,
+      lastScrollX: window.scrollX,
+      lastScrollY: window.scrollY,
+    };
+    window.addEventListener('touchstart', function (e) {
+      if (!e.target.getAttribute(attrs.ASSET_URL)) {
+        touch.isTouching = true;
+      }
+    });
+    window.addEventListener('touchend', function (e) {
+      touch.isTouching = false;
+    });
+    setInterval(() => {
+      const scrollY = window.scrollY;
+      const scrollX = window.scrollX;
+      if (!touch.isTouching && touch.lastScrollY == scrollY && touch.lastScrollX == scrollX) {
+        attachCollectButtons();
+      }
+      touch.lastScrollY = scrollY;
+      touch.lastScrollX = scrollX;
+    }, 250);
+  }
+  else {
+    const click = {
+      clientX: -1,
+      clientY: -1,
+      lastScrollX: window.scrollX,
+      lastScrollY: window.scrollY,
+    };
+    setInterval(() => {
+      const scrollY = window.scrollY;
+      const scrollX = window.scrollX;
+      if (click.lastScrollY == scrollY && click.lastScrollX == scrollX) {
+        attachCollectButtons();
+      }
+      click.lastScrollY = scrollY;
+      click.lastScrollX = scrollX;
+    }, 250);
+  }
+}
+
+function initManage() {
+  hooks.push({
+    eventName: methods.ASSET_STATUS,
+    callback: ({ success, result }) => {
+      if (success) {
+        result.forEach(r => {
+          if (
+            manageButtonMap[r.assetURL] &&
+            manageButtonMap[r.assetURL].registered === false &&
+            r.registered === true
+          ) {
+            manageButtonMap[r.assetURL].references.forEach(ref => {
+              ref.button.innerHTML = 'Manage';
+              ref.button.className = 'cent-manage-button customize';
+            });
+          }
+          manageButtonMap[r.assetURL].registered = r.registered;
+          manageButtonMap[r.assetURL].checked = true;
+        });
+      }
+    }
+  });
+  setInterval(attachManageButtons, 250);
+}
+
+function newCollectButton() {
   const span = document.createElement('span');
   span.innerHTML = 'Collect';
-  span.setAttribute('style', `
-    font: 600 12px / 14px Helvetica, sans-serif !important;
-    vertical-align: middle !important;
-    text-align: center !important;
-    text-indent: 0 !important;
-    background-color: white !important;
-    color: black !important;
-    cursor: pointer !important;
-    padding: 8px 14px !important;
-    border-radius: 500px !important;
-    background-clip: padding-box;
-    border: 2px solid transparent !important;
-    transition: border .5s, opacity .5s !important;
-    position: absolute !important;
-    z-index: 8675310 !important;
-    opacity: ${mobile ? '0' : '1'};
-    display: ${mobile ? 'block' : 'none'};
-  `);
-  span.addEventListener('click', onClickHandler);
+  span.className = 'cent-collect-button customize';
+  span.addEventListener('click', onClickCollect);
   document.body.appendChild(span);
   return span;
 }
 
-function showButtonMobile(button) {
-  button.style.opacity = '1';
+function newManageButton() {
+  const span = document.createElement('span');
+  span.innerHTML = 'Manage';
+  span.className = 'cent-manage-button customize';
+  span.addEventListener('click', onClickManage);
+  document.body.appendChild(span);
+  return span;
 }
 
-function hideButtonMobile(button) {
-  button.style.opacity = '0';
+function newMintButton() {
+  const span = document.createElement('span');
+  span.innerHTML = 'Secure';
+  span.className = 'cent-mint-button customize';
+  span.addEventListener('click', onClickManage);
+  document.body.appendChild(span);
+  return span;
 }
 
-function showButtonDesktop(button) {
-  button.style.display = 'block';
+function newExitButton() {
+  const span = document.createElement('span');
+  span.innerHTML = '<img src="https://cent.co/favicon.ico" class="cent-exit-logo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exit';
+  span.className = 'cent-exit-button customize';
+  span.addEventListener('click', onClickExit);
+  document.body.appendChild(span);
+  return span;
 }
 
-function hideButtonDesktop(button) {
-  button.style.display = 'none';
-}
-
-function showButtonBorderDesktop(e) {
-  e.target.style.border = '2px solid black';
-}
-
-function hideButtonBorderDesktop(e) {
-  e.target.style.border = '2px solid transparent';
-}
-
-function isTouchDevice () {
+function isTouchDevice() {
   return (('ontouchstart' in window) ||
      (navigator.maxTouchPoints > 0) ||
      (navigator.msMaxTouchPoints > 0));
 }
 
-function attachButtons () {
+function getMedia() {
+  const images = Array.prototype.slice.call(document.querySelectorAll('img'));
+  return images.filter(image => {
+    const ext = (image.src || '')
+    .split('/').slice(-1)[0]  // Get last part of the path
+    .split('.').slice(-1)[0]  // Get file extension
+    .toLowerCase();           // Normalize casing
+    return (ext === 'png' || ext === 'gif' || ext === 'jpg' || ext === 'jpeg' || ext === 'webp');
+  });
+}
+
+function attachCollectButtons() {
   const nonce = parseInt(Math.random() * 2_000_000_000);
-  const images = document.querySelectorAll('img');
   const scrollY = window.scrollY;
   const scrollX = window.scrollX;
-  images.forEach(image => {
+  const newAssetURLs = [];
+  getMedia().forEach(image => {
     if (image.complete) {
       const rect = image.getBoundingClientRect();
       if (rect.width >= MIN_DIM && rect.height >= MIN_DIM) {
         const src = image.src;
-        let button = null;
-        if (!mediaButtonMap[src]) {
-          button = newButton(true);
-          mediaButtonMap[src] = [{
-            nonce,
-            button,
-            media: image
-          }];
-          button.setAttribute(attrs.ASSET_URL, src);
-          button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
-          button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected at ${window.location.href}`);
-        }
-        else {
-          mediaButtonMap[src].forEach(mb => {
-            if (image === mb.media) {
-              button = mb.button;
-              mb.nonce = nonce;
+        if (!collectButtonMap[src]) {
+          newAssetURLs.push(src);
+          collectButtonMap[src] = {
+            type: 'image',
+            registered: false,
+            references: [],
+          };
+        } else if (collectButtonMap[src].registered) {
+          let button = null;
+          collectButtonMap[src].references.forEach(reference => {
+            if (image === reference.media) {
+              button = reference.button;
+              reference.nonce = nonce;
             }
           });
           if (!button) {
-            button = newButton(true);
-            mediaButtonMap[src].push({
-              nonce,
+            button = newCollectButton(true);
+            collectButtonMap[src].references.push({
+              media: image,
               button,
-              media: image
+              nonce,
             });
             button.setAttribute(attrs.ASSET_URL, src);
             button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
-            button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected at ${window.location.href}`);
+            button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected on ${window.location.href}`);
+          }
+          button.style.top = Math.round(rect.top + scrollY + 7) + 'px';
+          button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
+        }
+      }
+    }
+  });
+  if (newAssetURLs.length > 0) {
+    relay.lookup(newAssetURLs);
+  }
+  Object.keys(collectButtonMap).forEach((key) => {
+    const mb = collectButtonMap[key];
+    const index = mb.references.length - 1;
+    for (let i = index; i >= 0; i--) {
+      if (mb.references[i].nonce !== nonce) {
+        const button = mb.references[i].button;
+        button.parentNode.removeChild(button);
+        mb.references.splice(i, 1);
+      }
+    }
+  });
+}
+
+function attachManageButtons() {
+  const nonce = parseInt(Math.random() * 2_000_000_000);
+  const scrollY = window.scrollY;
+  const scrollX = window.scrollX;
+  const newAssetURLs = [];
+  getMedia().forEach(image => {
+    if (image.complete) {
+      const rect = image.getBoundingClientRect();
+      if (rect.width >= MIN_DIM && rect.height >= MIN_DIM) {
+        const src = image.src;
+        if (!manageButtonMap[src]) {
+          newAssetURLs.push(src);
+          manageButtonMap[src] = {
+            type: 'image',
+            registered: false,
+            references: [],
+          };
+        } else if (manageButtonMap[src].checked) {
+          if (manageButtonMap[src].registered) {
+            let button = null;
+            manageButtonMap[src].references.forEach(reference => {
+              if (image === reference.media) {
+                button = reference.button;
+                reference.nonce = nonce;
+              }
+            });
+            if (!button) {
+              button = newManageButton(true);
+              manageButtonMap[src].references.push({
+                media: image,
+                button,
+                nonce,
+              });
+              button.setAttribute(attrs.ASSET_URL, src);
+            }
+            button.style.top = Math.round(rect.top + scrollY + 7) + 'px';
+            button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
+          } else {
+            let button = null;
+            manageButtonMap[src].references.forEach(reference => {
+              if (image === reference.media) {
+                button = reference.button;
+                reference.nonce = nonce;
+              }
+            });
+            if (!button) {
+              button = newMintButton(true);
+              manageButtonMap[src].references.push({
+                media: image,
+                button,
+                nonce,
+              });
+              button.setAttribute(attrs.ASSET_URL, src);
+            }
+            button.style.top = Math.round(rect.top + scrollY + 7) + 'px';
+            button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
           }
         }
-        button.style.top = Math.round(rect.top + scrollY + 8) + 'px';
-        button.style.left = Math.round(rect.left + scrollX + 6) + 'px';
-        showButtonMobile(button);
       }
     }
   });
-  // Cleanup
-  Object.keys(mediaButtonMap).forEach((key) => {
-    const mediaButtons = mediaButtonMap[key];
-    const index = mediaButtons.length - 1;
+  if (newAssetURLs.length > 0) {
+    relay.lookup(newAssetURLs);
+  }
+  Object.keys(manageButtonMap).forEach((key) => {
+    const mb = manageButtonMap[key];
+    const index = mb.references.length - 1;
     for (let i = index; i >= 0; i--) {
-      if (mediaButtons[i].nonce !== nonce) {
-        const button = mediaButtons[i].button;
+      if (mb.references[i].nonce !== nonce) {
+        const button = mb.references[i].button;
         button.parentNode.removeChild(button);
-        mediaButtons.splice(i, 1);
+        mb.references.splice(i, 1);
       }
     }
-    if (mediaButtons.length === 0) {
-      delete mediaButtonMap[key];
-    }
   });
 }
 
-function detachButtons () {
-  Object.keys(mediaButtonMap).forEach((key) => {
-    mediaButtonMap[key].forEach(mb => {
-      hideButtonMobile(mb.button);
-    });
-  });
-}
-
-function onClickHandler() {
+function onClickCollect() {
   relay.collect(
     this.getAttribute(attrs.ASSET_URL),
     this.getAttribute(attrs.ASSET_TITLE),
     this.getAttribute(attrs.ASSET_DESCRIPTION)
   );
+}
+
+function onClickManage() {
+  relay.manage(
+    this.getAttribute(attrs.ASSET_URL)
+  );
+}
+
+function onClickExit() {
+  window.localStorage.removeItem('collect-manager');
+  window.location.href = window.location.href.replace('collectManager=', 'exit=');
+}
+
+function getQueryVariable(variable) {
+  const query = window.location.search.substring(1);
+  const vars = query.split('&');
+  for (let i = 0; i < vars.length; i += 1) {
+    const pair = vars[i].split('=');
+    if (decodeURIComponent(pair[0]) === variable) {
+      return decodeURIComponent(pair[1]);
+    }
+  }
+  return null;
 }
