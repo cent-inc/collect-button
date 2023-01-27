@@ -134,7 +134,7 @@ function initManage() {
             r.registered === true
           ) {
             manageButtonMap[r.assetURL].references.forEach(ref => {
-              ref.button.innerHTML = 'Managed';
+              ref.button.innerHTML = 'View';
               ref.button.className = 'cent-manage-button customize';
             });
           }
@@ -165,7 +165,7 @@ function newCollectButton(asset) {
 
 function newManageButton(asset) {
   const span = document.createElement('span');
-  span.innerHTML = 'Managed';
+  span.innerHTML = 'View';
   span.className = 'cent-manage-button customize';
   span.addEventListener('click', onClickManage);
   asset.parentNode.appendChild(span);
@@ -174,7 +174,7 @@ function newManageButton(asset) {
 
 function newMintButton(asset) {
   const span = document.createElement('span');
-  span.innerHTML = 'Manage';
+  span.innerHTML = 'Setup';
   span.className = 'cent-mint-button customize';
   span.addEventListener('click', onClickManage);
   asset.parentNode.appendChild(span);
