@@ -39,7 +39,7 @@ function init() {
   if (activateManager || window.localStorage.getItem('collect-manager') === 'true') {
     window.localStorage.setItem('collect-manager', 'true');
     if (activateManager) {
-      window.location.replace(window.location.href.replace(`?collectManager${activateManager === 'undefined' ? '' : `=${activateManager}`}`, ''));
+      window.location.replace(window.location.href.replace(`collectManager${activateManager === 'undefined' ? '' : `=${activateManager}`}`, ''));
     } else {
       newExitButton();
       initManage();
