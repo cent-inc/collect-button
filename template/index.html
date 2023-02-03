@@ -30,6 +30,12 @@
         font-size: 1.5em;
       }
     </style>
+    <script>
+      function myFunction(text) {
+        console.log(text);
+        window.location.reload();
+      }
+    </script>
   </head>
   <body>
     <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
@@ -38,11 +44,13 @@
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet lectus metus. Integer id diam metus. Curabitur ac urna nec velit auctor vestibulum nec non nisi. Vivamus placerat tristique quam eu fermentum. Donec sed nunc nibh. Ut efficitur, nisl a lacinia porta, metus nisl iaculis sem, et maximus felis arcu non ligula. Nunc consequat consectetur magna, id vulputate leo ultricies non. Ut sit amet risus at leo tincidunt euismod. Donec congue elit sed risus iaculis, id maximus nisl tempor. Nullam congue, ipsum vel feugiat consectetur, massa magna posuere urna, sed congue ex eros ut justo. In nec cursus urna, vitae facilisis ipsum. Donec fermentum, augue vel dapibus pulvinar, leo elit gravida nisi, eu congue libero diam quis turpis. Ut porta sapien et mattis facilisis. Suspendisse id ipsum tempor, volutpat augue ut, molestie lacus. Suspendisse et placerat elit, nec efficitur mauris. Ut vel nunc pharetra, convallis tortor ac, convallis ante.
       </p>
       <div class="collectible">
-        <img src="/media/knuckle.png" />
+        <img src="/media/knuckle.png" onclick="myFunction('knuckle image')"/>
         <br />
       </div>
       <div class="collectible">
-        <img src="/media/veggies.png" />
+        <a href="http://localhost:4000/">
+          <img src="/media/veggies.png" />
+        </a>
         <br />
       </div>
       <div class="collectible">

@@ -39,7 +39,7 @@ function init() {
   if (activateManager || window.localStorage.getItem('collect-manager') === 'true') {
     window.localStorage.setItem('collect-manager', 'true');
     if (activateManager) {
-      window.location.replace(window.location.href.replace('?collectManager=1', ''));
+      window.location.replace(window.location.href.replace(/collectManager[^&]*/g, ''))
     } else {
       newExitButton();
       initManage();
@@ -342,7 +342,9 @@ function attachManageButtons() {
   });
 }
 
-function onClickCollect() {
+function onClickCollect(e) {
+  e.stopPropagation();
+  e.preventDefault();
   relay.collect(
     this.getAttribute(attrs.ASSET_URL),
     this.getAttribute(attrs.ASSET_TITLE),
@@ -350,7 +352,9 @@ function onClickCollect() {
   );
 }
 
-function onClickManage() {
+function onClickManage(e) {
+  e.stopPropagation();
+  e.preventDefault();
   relay.manage(
     this.getAttribute(attrs.ASSET_URL)
   );
