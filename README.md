@@ -1,72 +1,63 @@
 # Collect Button
 
-Documentation coming soon.
-
-## Collect button notes and details [CURRENT]
-
-The Collect button takes a _token type_ and makes it collectible by anyone.
-
-A token type consists of:
-- The title of the asset
-- The description of the asset
-- A URL pointing to the asset
-
-The URL uniquely identifies each token type; no two tokens can use the same url.
-
-Each asset type appears in its own collection on OpenSea.
-
-The Collect Button currently allows you to create freely collectible NFTs.
-
-The library takes care of web3 wallet creation, ownership tracking and collection management.
+The Collect Button makes anything on your site collectible by anyone. Using the SDK, you can manage what is collectable. We currently support have full support for images, videos, and audio files. We are constantly updating the capabilities, so be sure to check back for updates. You can also reach out to us with feature requests.
 
 ## Setup
+1. Make sure you have a Cent account. This account will be the associated creator of all NFTs created with your site. You will have the ability to view items collected as well as the contact info (email addresses) of the collectors.
 
-1. Make sure you have a Cent Pages Creator account. This account will be the associated creator of all NFTs, and will have the ability to view email addresses of collectors.
+2. Make sure your third party domain is configured to mint with your Cent page. This is currently a manual step that currently requires reaching out to the Cent team with the domain you intend to use.
 
-2. Make sure your third party domain is configured to mint with your Cent page. This is a manual step that currently requires pinging the Cent Team with the domain(s) you intend to use.
+## Modes of operation
 
-3. Add the script tag to your site:
+The Collect button SDK currently offers two modes of operation, a Managed mode and a Custom mode. Managed mode lets you pick and choose which items to make collectible with a UI, while Custom mode allows you to programmatically make assets collectible from the code on your site.
 
-To add automatic collecting to all images on your site, include this library as a script tag in the HEAD of your site:
+### Managed mode
+
+To manage which assets on your site are collectible using a friendly UI, add the following script to your site:
 
 ```
 <script src="https://unpkg.com/collect-button@latest/dist/button.js"></script>
 ```
 
-To add custom Collect Button to specific assets on your site, include the library as a script tag in the HEAD of your site:
+Then, on Cent.co, you will see a **Manage Collectibles** button in the **Website** tab that launches a management interface _within_ your site.
+
+### Custom mode
+
+To manage which assets on your site are collectible using custom JS code, add the following script to your site:
 
 ```
 <script src="https://unpkg.com/collect-button@latest/dist/index.js"></script>
 ```
 
-Then, use custom scripting to initialize the button using the global method `createCollectButton`:
-
-```
-window.createCollectButton({
-	assetURL: "<url>",
-	assetTitle: "<title>",
-	assetDescription: "<description>",
-	buttonText: "Collect"
-}, element);
-```
-- assetURL: Unique URL pointing to the asset which can be an image, audio, or video file 
-- assetTitle: Title for the NFT. Maximum length of 200 characters
-- assetDescription: Description for the NFT.
-- buttonText: Label to use for the button.
-- element: the container the Collect button should render inside of. 
+This will attach a global method to the `window` object `collectNFT({ url, title, description })`. These arguments specify the details of the NFT to be collected. Currently it is not possible to set the maximum supply or royalty details through this method.
 
 
-## Feature ideas (in no apparent order)
-- [ ] Self-service domain management for API access
-- [ ] Non-componentized read APIs for the current user wallet and NFTs owned.
-- [ ] Support for Paid NFTs
-- [ ] Support for api-based Collecting of NFTs released through a Cent Page (non-API)
-- [ ] Support for minting from different creator accounts on a single domain
-- [ ] Ability to end Minting of asset from the creator Dashboard
-- [ ] Limiting which assets/urls can be tokenized on your website from the creator Dashboard
-- [ ] Setting a max supply of an asset
-- [ ] Setting royalty rates, royalty owners, and contract owners
-- [ ] Importing components and methods directly into a react project (not attaching to global events)
+### Asset Details
+
+The Cent Platform offers the ability to control numerous aspects of an NFT. These include:
+
+- **Price of the NFT:** Currently Sales are using traditional currencies, powered by Stripe.
+- **Supply of the NFT:** How many units of this asset are collectable in total.
+- **Contract owner:** This, for instance, allows you to claim the collection on OpenSea.
+- **Royalty Rate:** A percentage of any volume that happens on secondary sales, on a market such as OpenSea.
+- **Royalty Receipient:** The Ethereum address that receives any secondary sale royalties.
+
+### Web3 Details
+
+When a user collects NFTs on your site, they are interacting with Cent Platform flow via a series of Modals. This flow does a few things:
+
+1. Cent authenticates the user by verifying their email address
+2. Cent provisions a web3 wallet for the user
+3. Cent mints the asset to the user's wallet.
+4. Cent displays a confirmation message and sends a confirmation email.
+
+You can access the email address of the collector by logging into the Cent Platform and navigating to the individual asset.
+
+## Feature roadmap (in no apparent order)
+- [ ] Priced NFTs
+- [ ] Style customization for Collect flow
+- [ ] Support for Video and Audio when in "automatic mode"
+- [ ] Read APIs for the current user wallet and NFTs owned
 - [ ] Limit collecting to greenlist of addresses/emails
 - [ ] Minting directly to web3 address (not magic link)
-- [ ] Allowing phone number for Magic auth
+- [ ] Authenticating with phone number instead of email

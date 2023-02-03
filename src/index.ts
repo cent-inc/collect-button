@@ -27,7 +27,7 @@ export function createCollectButton (params, container) {
   container.appendChild(button);
 }
 
-export function collectNFT(url, title, description) {
+export function collectNFT({ url, title, description }) {
   relay.collect(url, title, description);
 }
 
