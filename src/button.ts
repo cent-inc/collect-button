@@ -202,6 +202,7 @@ function getMedia() {
     const ext = (image.src || '')
     .split('/').slice(-1)[0]  // Get last part of the path
     .split('.').slice(-1)[0]  // Get file extension
+    .split('?')[0]            // Strip query string
     .toLowerCase();           // Normalize casing
     return (ext === 'png' || ext === 'gif' || ext === 'jpg' || ext === 'jpeg' || ext === 'webp');
   });
@@ -279,6 +280,7 @@ function attachManageButtons() {
           newAssetURLs.push(src);
           manageButtonMap[src] = {
             type: 'image',
+            checked: window.centOverrideMintCheck || false,
             registered: false,
             references: [],
           };
