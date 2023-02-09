@@ -267,6 +267,7 @@ function attachCollectButtons() {
 }
 
 function attachManageButtons() {
+  const checkOverride = window.localStorage.getItem('collect-manager-override') === 'true';
   const nonce = parseInt(Math.random() * 2_000_000_000);
   const scrollY = window.scrollY;
   const scrollX = window.scrollX;
@@ -280,7 +281,7 @@ function attachManageButtons() {
           newAssetURLs.push(src);
           manageButtonMap[src] = {
             type: 'image',
-            checked: window.centOverrideMintCheck || false,
+            checked: checkOverride || false,
             registered: false,
             references: [],
           };
