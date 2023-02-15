@@ -3,6 +3,7 @@ export const methods = {
   ASSET_STATUS: 'asset-status',
   COLLECT_ASSET: 'collect-asset',
   HIDE_RELAY: 'hide-relay',
+  MANAGE_ASSET: 'manage-asset',
 }
 
 export const attrs = {
