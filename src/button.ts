@@ -30,6 +30,8 @@ const manageButtonMap = {
   ...
  */
 };
+
+
 const MIN_DIM = 100;
 const hooks = [];
 relay.init(hooks);
@@ -249,7 +251,8 @@ function attachCollectButtons() {
             button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected on ${window.location.href}`);
           }
           button.style.top = Math.round(image.offsetTop + 7) + 'px';
-          button.style.left = Math.round(image.offsetLeft + 6) + 'px';
+          // This is calculated by the set width of the button + spacing from right side that we want
+          button.style.left = Math.round(image.offsetLeft + image.width - (72 + 6)) + 'px';
         }
       }
     }
@@ -307,7 +310,7 @@ function attachManageButtons() {
               button.setAttribute(attrs.ASSET_URL, src);
             }
             button.style.top = Math.round(image.offsetTop + 7) + 'px';
-            button.style.left = Math.round(image.offsetLeft + 6) + 'px';
+            button.style.left = Math.round(image.offsetLeft + image.width - (60 + 6)) + 'px';
           } else {
             let button = null;
             manageButtonMap[src].references.forEach(reference => {
@@ -326,7 +329,7 @@ function attachManageButtons() {
               button.setAttribute(attrs.ASSET_URL, src);
             }
             button.style.top = Math.round(image.offsetTop + 7) + 'px';
-            button.style.left = Math.round(image.offsetLeft + 6) + 'px';
+            button.style.left = Math.round(image.offsetLeft + image.width - (66 + 6)) + 'px';
           }
         }
       }
