@@ -34,7 +34,7 @@ const MIN_DIM = 100;
 const hooks = [];
 relay.init(hooks);
 
-const checkOverride = window.localStorage.getItem('collect-manager-override') === 'true';
+const checkOverride = false;
 function init() {
   const activateManager = getQueryVariable('collectManager');
   if (activateManager || window.localStorage.getItem('collect-manager') === 'true') {
@@ -386,4 +386,16 @@ function getQueryVariable(variable) {
     }
   }
   return null;
+}
+
+export function collectNFT({ url, title, description }) {
+  relay.collect(url, title, description);
+}
+
+function onClickHandler() {
+  relay.collect(
+    this.getAttribute(attrs.ASSET_URL),
+    this.getAttribute(attrs.ASSET_TITLE),
+    this.getAttribute(attrs.ASSET_DESCRIPTION),
+  );
 }
