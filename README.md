@@ -9,24 +9,24 @@ The Collect Button makes anything on your site collectible by anyone. Using the 
 
 ## Modes of operation
 
-The Collect button SDK currently offers two modes of operation, a Managed mode and a Custom mode. Managed mode lets you pick and choose which items to make collectible with a UI, while Custom mode allows you to programmatically make assets collectible from the code on your site.
+The Collect button SDK currently offers two modes of operation, a Default mode and a Headless mode. Default mode lets you pick and choose which items to make collectible with a UI, while Headless mode allows you to programmatically make assets collectible from the code on your site.
 
-### Managed mode
+### Default mode
 
 To manage which assets on your site are collectible using a friendly UI, add the following script to your site:
 
 ```
-<script src="https://unpkg.com/collect-button@latest/dist/button.js"></script>
+<script src="https://sdk.cent.co/dist/button.js"></script>
 ```
 
 Then, on Cent.co, you will see a **Manage Collectibles** button in the **Website** tab that launches a management interface _within_ your site.
 
-### Custom mode
+### Headless mode
 
 To manage which assets on your site are collectible using custom JS code, add the following script to your site:
 
 ```
-<script src="https://unpkg.com/collect-button@latest/dist/index.js"></script>
+<script src="https://sdk.cent.co/dist/index.js"></script>
 ```
 
 This will attach a global method to the `window` object `collectNFT({ url, title, description })`. These arguments specify the details of the NFT to be collected. Currently it is not possible to set the maximum supply or royalty details through this method.
@@ -42,22 +42,24 @@ The Cent Platform offers the ability to control numerous aspects of an NFT. Thes
 - **Royalty Rate:** A percentage of any volume that happens on secondary sales, on a market such as OpenSea.
 - **Royalty Receipient:** The Ethereum address that receives any secondary sale royalties.
 
+Note, it is not currently possible to specify these details in Headless mode.
+
 ### Web3 Details
 
-When a user collects NFTs on your site, they are interacting with Cent Platform flow via a series of Modals. This flow does a few things:
+When a user collects NFTs on your site, they interact with Cent though a series of Cent controlled flows. These flows:
 
-1. Cent authenticates the user by verifying their email address
-2. Cent provisions a web3 wallet for the user
-3. Cent mints the asset to the user's wallet.
-4. Cent displays a confirmation message and sends a confirmation email.
+1. Authenticate the user by verifying their email address.
+2. Provision a web3 wallet for the user.
+3. Mint the asset to the user's wallet.
+4. Displs a confirmation message and sends a confirmation email.
 
-You can access the email address of the collector by logging into the Cent Platform and navigating to the individual asset.
+The SDK integrator can access the email address of the collector by logging into the Cent Platform (cent.co) and viewing the asset collected.
 
-## Feature roadmap (in no apparent order)
-- [ ] Priced NFTs
-- [ ] Style customization for Collect flow
-- [ ] Support for Video and Audio when in "automatic mode"
-- [ ] Read APIs for the current user wallet and NFTs owned
+## Feature ideas (in no apparent order)
+- [ ] Customizing asset details in Headless mode.
+- [ ] Style/theming for Collect flow
+- [ ] Support for Video and Audio in Default
+- [ ] Read APIs exposed via SDK for authenticated wallet and NFTs owned
 - [ ] Limit collecting to greenlist of addresses/emails
 - [ ] Minting directly to web3 address (not magic link)
 - [ ] Authenticating with phone number instead of email
