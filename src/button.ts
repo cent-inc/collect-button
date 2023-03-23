@@ -351,11 +351,12 @@ function attachManageButtons() {
 function onClickCollect(e) {
   e.stopPropagation();
   e.preventDefault();
-  relay.collect(
-    this.getAttribute(attrs.ASSET_URL),
-    this.getAttribute(attrs.ASSET_TITLE),
-    this.getAttribute(attrs.ASSET_DESCRIPTION)
-  );
+  relay.collect({
+    assetURL: this.getAttribute(attrs.ASSET_URL),
+    assetTitle: this.getAttribute(attrs.ASSET_TITLE),
+    assetDescription: this.getAttribute(attrs.ASSET_DESCRIPTION),
+    autoCollect: false,
+  });
 }
 
 function onClickManage(e) {
@@ -389,13 +390,10 @@ function getQueryVariable(variable) {
 }
 
 export function collectNFT({ url, title, description }) {
-  relay.collect(url, title, description);
-}
-
-function onClickHandler() {
-  relay.collect(
-    this.getAttribute(attrs.ASSET_URL),
-    this.getAttribute(attrs.ASSET_TITLE),
-    this.getAttribute(attrs.ASSET_DESCRIPTION),
-  );
+  relay.collect({
+    assetURL: url,
+    assetTitle: title,
+    assetDescription: description,
+    autoCollect: true,
+  });
 }

@@ -1,10 +1,13 @@
 import {
   attrs,
+  methods,
 } from './constants';
 import './styles/index.css'
 import * as relay from './relay';
 
-relay.init([]);
+const hooks = [];
+
+relay.init(hooks);
 
 export function createCollectButton (params, container) {
   const button = document.createElement('button');
@@ -27,14 +30,26 @@ export function createCollectButton (params, container) {
   container.appendChild(button);
 }
 
-export function collectNFT({ url, title, description }) {
-  relay.collect(url, title, description);
+export function collectNFT({ url, title, description, onExit }) {
+  if (typeof onExit === 'function') {
+    hooks.push({
+      eventName: methods.HIDE_RELAY,
+      fn: onExit,
+    });
+  }
+  relay.collect({
+    assetURL: url,
+    assetTitle: title,
+    assetDescription: description,
+    autoCollect: true,
+  });
 }
 
 function onClickHandler() {
-  relay.collect(
-    this.getAttribute(attrs.ASSET_URL),
-    this.getAttribute(attrs.ASSET_TITLE),
-    this.getAttribute(attrs.ASSET_DESCRIPTION),
-  );
+  relay.collect({
+    assetURL: this.getAttribute(attrs.ASSET_URL),
+    assetTitle: this.getAttribute(attrs.ASSET_TITLE),
+    assetDescription: this.getAttribute(attrs.ASSET_DESCRIPTION),
+    autoCollect: true,
+  });
 }
