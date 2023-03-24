@@ -63,6 +63,11 @@ function _init(hooks) {
           break;
         case methods.HIDE_RELAY: {
           hideRelayIFrame();
+          for (let i = hooks.length - 1; i >= 0; i--) {
+            if (hooks[i].eventName === methods.HIDE_RELAY && hooks[i].assetURL === params.assetURL) {
+              hooks.pop().fn(result);
+            }
+          }
           break;
         }
         default:
@@ -97,13 +102,14 @@ export async function lookup(assetURLs) {
   });
 }
 
-export async function collect(assetURL, assetTitle, assetDescription) {
+export async function collect({ assetURL, assetTitle, assetDescription, autoCollect=true }) {
   await new Promise(waitForLoaded);
   showRelayIFrame();
   sendPostMessage(methods.COLLECT_ASSET, {
     assetURL,
     assetTitle,
     assetDescription,
+    autoCollect,
   });
 }
 
