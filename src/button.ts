@@ -11,6 +11,7 @@ const collectButtonMap = {
     type: string,
     checked: boolean,
     registered: boolean,
+    hidden: boolean,
     references: [{
       button: HTMLElement,
       media: HTMLElement,
@@ -74,10 +75,12 @@ function initCollect() {
             collectButtonMap[r.assetURL] = {
               checked: false,
               registered: false,
+              hidden: r.hidden,
               references: [],
             };
           }
           collectButtonMap[r.assetURL].registered = r.registered;
+          collectButtonMap[r.assetURL].hidden = r.hidden;
           collectButtonMap[r.assetURL].checked = true;
         });
       }
@@ -229,7 +232,7 @@ function attachCollectButtons() {
             registered: false,
             references: [],
           };
-        } else if (collectButtonMap[src].registered) {
+        } else if (collectButtonMap[src].registered && !collectButtonMap[src].hidden) {
           let button = null;
           collectButtonMap[src].references.forEach(reference => {
             if (image === reference.media) {
