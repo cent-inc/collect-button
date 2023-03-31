@@ -76,11 +76,13 @@ function initCollect() {
               checked: false,
               registered: false,
               hidden: r.hidden,
+              last_updated: r.last_updated,
               references: [],
             };
           }
           collectButtonMap[r.assetURL].registered = r.registered;
           collectButtonMap[r.assetURL].hidden = r.hidden;
+          collectButtonMap[r.assetURL].last_updated = r.last_updated;
           collectButtonMap[r.assetURL].checked = true;
         });
       }
@@ -197,6 +199,15 @@ function newExitButton() {
   return span;
 }
 
+function newExclusiveContentBanner(asset) {
+  const div = document.createElement('div');
+  div.innerHTML = '<div class="cent-exclusive-content-banner"><div class="cent-exclusive-content-banner__bg"></div><div class="cent-exclusive-content-banner__label"><i class="cent-exclusive-content-banner__icon fa-solid fa-lock"></i>Exclusive Content</div></div>'
+  div.className = 'cent-exclusive-content-banner__container customize';
+  div.addEventListener('click', onClickCollect);
+  asset.parentNode.appendChild(div);
+  return div;
+}
+
 function isTouchDevice() {
   return (('ontouchstart' in window) ||
      (navigator.maxTouchPoints > 0) ||
@@ -234,25 +245,39 @@ function attachCollectButtons() {
           };
         } else if (collectButtonMap[src].registered && !collectButtonMap[src].hidden) {
           let button = null;
+          let exclusiveContentBanner = null;
           collectButtonMap[src].references.forEach(reference => {
             if (image === reference.media) {
               button = reference.button;
+              exclusiveContentBanner = reference.exclusiveContentBanner;
               reference.nonce = nonce;
             }
           });
           if (!button) {
             button = newCollectButton(image);
-            collectButtonMap[src].references.push({
-              media: image,
-              button,
-              nonce,
-            });
             button.setAttribute(attrs.ASSET_URL, src);
             button.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
             button.setAttribute(attrs.ASSET_DESCRIPTION, `Collected on ${window.location.href}`);
+            if (!exclusiveContentBanner && collectButtonMap[src].last_updated) {
+              exclusiveContentBanner = newExclusiveContentBanner(image);
+              exclusiveContentBanner.setAttribute(attrs.ASSET_URL, src);
+              exclusiveContentBanner.setAttribute(attrs.ASSET_TITLE, `${src.split('/').slice(-1)}`);
+              exclusiveContentBanner.setAttribute(attrs.ASSET_DESCRIPTION, `Collected on ${window.location.href}`);
+            }
+            collectButtonMap[src].references.push({
+              media: image,
+              exclusiveContentBanner,
+              button,
+              nonce,
+            });
           }
           button.style.top = Math.round(image.offsetTop + 7) + 'px';
           button.style.left = Math.round(image.offsetLeft + 6) + 'px';
+          if (exclusiveContentBanner) {
+            exclusiveContentBanner.style.bottom = Math.round(image.offsetTop - rect.height) + 'px';
+            exclusiveContentBanner.style.left = Math.round(image.offsetLeft) + 'px';
+            exclusiveContentBanner.style.width = Math.round(rect.width) + 'px';
+          }
         }
       }
     }

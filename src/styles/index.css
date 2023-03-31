@@ -75,3 +75,42 @@
   position: absolute;
   z-index: 8675310;
 }
+
+.cent-exclusive-content-banner {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.cent-exclusive-content-banner__container {
+  position: absolute;
+  height: 40px;
+  cursor: pointer;
+}
+
+.cent-exclusive-content-banner__bg {
+  opacity: 0.6;
+  background-image: linear-gradient(#2E2E2E, #A1A1A1);
+  position: absolute;
+  backdrop-filter: blur(24px);
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.cent-exclusive-content-banner__label {
+  font: 700 12px / 14px Helvetica, sans-serif;
+  height: 100%;
+  display:  flex;
+  align-items: center;
+  text-transform: uppercase;
+  justify-content: center;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.cent-exclusive-content-banner__icon {
+  margin-right: 8px;
+}
