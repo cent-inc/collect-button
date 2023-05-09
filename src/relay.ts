@@ -107,11 +107,12 @@ export async function collect(assetURL, assetTitle, assetDescription) {
   });
 }
 
-export async function manage(assetURL) {
+export async function manage(assetURL, showPreRelease) {
   await new Promise(waitForLoaded);
   showRelayIFrame();
   sendPostMessage(methods.MANAGE_ASSET, {
     assetURL,
+    showPreRelease,
   });
 }
 
