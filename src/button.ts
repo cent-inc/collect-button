@@ -31,6 +31,9 @@ const manageButtonMap = {
   ...
  */
 };
+
+let showPreRelease = false;
+
 const MIN_DIM = 100;
 const hooks = [];
 relay.init(hooks);
@@ -48,6 +51,11 @@ function init() {
     } else {
       newExitButton();
       initManage();
+    }
+
+    const preRelease = getQueryVariable('preRelease');
+    if (preRelease) {
+      showPreRelease  = true;
     }
   }
   else {
@@ -366,7 +374,8 @@ function onClickManage(e) {
   e.stopPropagation();
   e.preventDefault();
   relay.manage(
-    this.getAttribute(attrs.ASSET_URL)
+    this.getAttribute(attrs.ASSET_URL),
+    showPreRelease
   );
 }
 

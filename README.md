@@ -20,6 +20,8 @@ To manage which assets on your site are collectible using a friendly UI, add the
 ```
 
 Then, on Cent.co, you will see a **Manage Collectibles** button in the **Website** tab that launches a management interface _within_ your site.
+The management interface in the website is controlled by adding `?collectManager=1` to the url of your website.
+The optional parameter `preRelease` (full added parameter is `?collectManager=1&preRelease=1`) can be used to fetch the latest pending version of the SDK if available.
 
 ### Headless mode
 
