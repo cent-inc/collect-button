@@ -11,3 +11,5 @@ export const attrs = {
   ASSET_TITLE: 'data-asset-title',
   ASSET_DESCRIPTION: 'data-asset-description',
 };
+
+export const MIN_DIM = 100;

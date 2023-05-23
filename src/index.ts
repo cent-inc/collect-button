@@ -4,12 +4,41 @@ import {
 } from './constants';
 import './styles/index.css'
 import * as relay from './relay';
+import { initManage } from './manage';
+import { getQueryVariable } from './utils';
 
 const hooks = [];
-
 relay.init(hooks);
 
+
+export function collectNFT({ url, title, description, onExit, autoCollect=true }) {
+  if (typeof onExit === 'function') {
+    hooks.push({
+      eventName: methods.HIDE_RELAY,
+      assetURL: url,
+      fn: onExit,
+    });
+  }
+  relay.collect({
+    assetURL: url,
+    assetTitle: title,
+    assetDescription: description,
+    autoCollect: autoCollect,
+  });
+}
+
+// DEPRECATED
+// Legacy method that inserts a clickable button in container.
+// Use fully programmatic `collectNFT` OR pre-fabbed `button.ts`
 export function createCollectButton (params, container) {
+  function onClickHandler() {
+    collectNFT({
+      url: this.getAttribute(attrs.ASSET_URL),
+      title: this.getAttribute(attrs.ASSET_TITLE),
+      description: this.getAttribute(attrs.ASSET_DESCRIPTION),
+      autoCollect: true,
+    });
+  }
   const button = document.createElement('button');
   button.setAttribute(attrs.ASSET_URL, params.assetURL);
   button.setAttribute(attrs.ASSET_TITLE, params.assetTitle);
@@ -30,26 +59,29 @@ export function createCollectButton (params, container) {
   container.appendChild(button);
 }
 
-export function collectNFT({ url, title, description, onExit }) {
-  if (typeof onExit === 'function') {
-    hooks.push({
-      eventName: methods.HIDE_RELAY,
-      fn: onExit,
-    });
+function init() {
+  const activateManager = getQueryVariable('collectManager');
+  if (activateManager) {
+    // Activate the manager and strip query string directive from the url.
+    window.localStorage.setItem('collect-manager', 'true');
+    const { location } = window;
+    const qsFragments = location.search.substr(1).split('&').filter(key => key.indexOf('collectManager') !== 0);
+    const newQs = qsFragments.length > 0 ? `?${qsFragments.join('&')}` : '';
+    location.replace(`${location.origin}${location.pathname}${newQs}${location.hash}`);
+    return;
   }
-  relay.collect({
-    assetURL: url,
-    assetTitle: title,
-    assetDescription: description,
-    autoCollect: true,
-  });
+  const managerActivated = window.localStorage.getItem('collect-manager') === 'true';
+  if (managerActivated) {
+    initManage(relay, hooks);
+  }
 }
 
-function onClickHandler() {
-  relay.collect({
-    assetURL: this.getAttribute(attrs.ASSET_URL),
-    assetTitle: this.getAttribute(attrs.ASSET_TITLE),
-    assetDescription: this.getAttribute(attrs.ASSET_DESCRIPTION),
-    autoCollect: true,
-  });
+if (
+  document.readyState === "complete" ||
+  document.readyState === "interactive"
+) {
+  init();
+}
+else {
+  window.addEventListener('DOMContentLoaded', init);
 }
