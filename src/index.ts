@@ -11,7 +11,7 @@ const hooks = [];
 relay.init(hooks);
 
 
-export function collectNFT({ url, title, description, onExit, autoCollect=true }) {
+export function collectNFT({ url, title, description, onExit, autoCollect=true, autoExit=false }) {
   if (typeof onExit === 'function') {
     hooks.push({
       eventName: methods.HIDE_RELAY,
@@ -24,6 +24,7 @@ export function collectNFT({ url, title, description, onExit, autoCollect=true }
     assetTitle: title,
     assetDescription: description,
     autoCollect: autoCollect,
+    autoExit: autoExit,
   });
 }
 
@@ -35,8 +36,7 @@ export function createCollectButton (params, container) {
     collectNFT({
       url: this.getAttribute(attrs.ASSET_URL),
       title: this.getAttribute(attrs.ASSET_TITLE),
-      description: this.getAttribute(attrs.ASSET_DESCRIPTION),
-      autoCollect: true,
+      description: this.getAttribute(attrs.ASSET_DESCRIPTION)
     });
   }
   const button = document.createElement('button');

@@ -202,7 +202,7 @@ function initCollect(relay, hooks) {
   }
 }
 
-export function collectNFT({ url, title, description, onExit, autoCollect=true }) {
+export function collectNFT({ url, title, description, onExit, autoCollect, autoExit }) {
   if (typeof onExit === 'function') {
     hooks.push({
       eventName: methods.HIDE_RELAY,
@@ -215,5 +215,6 @@ export function collectNFT({ url, title, description, onExit, autoCollect=true }
     assetTitle: title,
     assetDescription: description,
     autoCollect: autoCollect,
+    autoExit: autoExit,
   });
 }

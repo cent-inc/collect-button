@@ -102,7 +102,7 @@ export async function lookup(assetURLs) {
   });
 }
 
-export async function collect({ assetURL, assetTitle, assetDescription, autoCollect=true }) {
+export async function collect({ assetURL, assetTitle, assetDescription, autoCollect=true, autoExit=false }) {
   await new Promise(waitForLoaded);
   showRelayIFrame();
   sendPostMessage(methods.COLLECT_ASSET, {
@@ -110,6 +110,7 @@ export async function collect({ assetURL, assetTitle, assetDescription, autoColl
     assetTitle,
     assetDescription,
     autoCollect,
+    autoExit,
   });
 }
 

@@ -15,7 +15,7 @@ Once these steps are complete, you will have full collectible functionality enab
 
 The Collect button SDK currently offers two modes of operation, a Default mode and a Headless mode. Headless mode allows you to programmatically trigger collect flows using functions in the SDK. Default mode includes the APIs in Headless mode **and** also automatically overlays Cent's Collect buttons on assets that are collectible.
 
-Which mode you use is dependent on the path of the script tag you add to the `HEAD` of your site:
+Which mode you use is dependent on the script tag you add to the `HEAD` of your site:
 
 ### Default mode
 
@@ -26,7 +26,7 @@ Which mode you use is dependent on the path of the script tag you add to the `HE
 ### Headless mode
 
 ```
-<script src="https://sdk.cent.co/dist/button.js"></script>
+<script src="https://sdk.cent.co/dist/index.js"></script>
 ```
 
 ### Collect API
@@ -35,14 +35,16 @@ Both modes attach a global method to the `window` object `collectNFT`.
 
 ```
 window.collectNFT({
-	url: string,
-	autoCollect=true: boolean,
-	onExit: function ({
-		oldCollectTotal: number,
-		newCollectTotal: number,
-		oldUserCollectTotal: number,
-		newUserCollectTotal: number,
-	})
+  url: string,
+  autoCollect=true: boolean,
+  autoExit=false: boolean,
+  onExit: function ({
+    maxCollectTotal: numberm
+    oldCollectTotal: number,
+    newCollectTotal: number,
+    oldUserCollectTotal: number,
+    newUserCollectTotal: number,
+  })
 });
 ```
 
