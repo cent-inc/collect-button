@@ -44,6 +44,7 @@ window.collectNFT({
     newCollectTotal: number,
     oldUserCollectTotal: number,
     newUserCollectTotal: number,
+    userEmail: string
   })
 });
 ```
