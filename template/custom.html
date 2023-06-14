@@ -37,37 +37,38 @@
         <br />
       </div>
       <br />
+      <div style="text-align: center" id="user-collection-form">
+        <div>Email address: </div>
+        <input type="text" id="user-email">
+        <button
+          onClick="onGetUserCollection(document.getElementById('user-email').value)"
+        >
+          Get Collection
+        </button>
+        <div id="user-collection">
+      </div>
       <br />
     </div>
     <script>
-      window.addEventListener('load', function () {
-
-        window.createCollectButton({
-          centPage: 'collectbutton',
-          assetURL: window.location.origin + '/media/famous.png',
-          assetTitle: 'Famous',
-          assetDescription: 'Cameron\'s first NFT',
-          buttonText: 'Collect'
-        }, document.getElementById('collect-1'));
-
+      var collectionData = null;
+      function onGetUserCollection (email) {
         window.getUserCollection({
-          email: 'kimberlygha@gmail.com',
+          email,
           limit: 20,
           offset: 0,
         }).then((response) => {
-          console.log('User collection: ', response);
+          displayCollection(response.tokens);
         }).catch((e) => {
           console.log('Error get user collection: ', e);
           if (e === 'User not found') {
             window.loginUser()
             .then((response) => {
-              console.log('USER LOGGED IN', response);
               window.getUserCollection({
                 email: response.userEmail,
                 limit: 20,
                 offset: 0,
               }).then((response) => {
-                console.log('USER COLLECTION: ', response);
+                displayCollection(response.tokens);
               })
             })
             .catch((e) => {
@@ -75,7 +76,27 @@
             })
           }
         });
+      }
 
+      function displayCollection (tokens) {
+        if (!tokens) return null;
+        const collectionDisplay = document.getElementById('user-collection');
+        tokens.forEach((token) => {
+          const label = document.createElement("div");
+          label.className = "user-token-label";
+          label.innerText = token.title;
+          collectionDisplay.appendChild(label);
+        });
+      }
+
+      window.addEventListener('load', function () {
+        window.createCollectButton({
+          centPage: 'collectbutton',
+          assetURL: window.location.origin + '/media/famous.png',
+          assetTitle: 'Famous',
+          assetDescription: 'Cameron\'s first NFT',
+          buttonText: 'Collect'
+        }, document.getElementById('collect-1'));
       });
     </script>
   </body>
