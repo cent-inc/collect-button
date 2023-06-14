@@ -50,6 +50,31 @@
           buttonText: 'Collect'
         }, document.getElementById('collect-1'));
 
+        window.getUserCollection({
+          email: 'kimberlygha@gmail.com',
+          limit: 20,
+          offset: 0,
+        }).then((response) => {
+          console.log('User collection: ', response);
+        }).catch((e) => {
+          console.log('Error get user collection: ', e);
+          if (e === 'User not found') {
+            window.loginUser()
+            .then((response) => {
+              console.log('USER LOGGED IN', response);
+              window.getUserCollection({
+                email: response.userEmail,
+                limit: 20,
+                offset: 0,
+              }).then((response) => {
+                console.log('USER COLLECTION: ', response);
+              })
+            })
+            .catch((e) => {
+              console.log('Login error: ', e);
+            })
+          }
+        });
 
       });
     </script>

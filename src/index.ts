@@ -28,6 +28,43 @@ export function collectNFT({ url, title, description, onExit, autoCollect=true, 
   });
 }
 
+export function getUserCollection({ email, limit=20, offset=0 }) {
+  return new Promise((resolve, reject) => {
+    hooks.push({
+      eventName: methods.RESOLVE_COLLECTION,
+      fn: ({ result, success, error }) => {
+        if (success) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
+      },
+    });
+    relay.getUserCollection({
+      email,
+      limit,
+      offset,
+    });
+  });
+}
+
+export function loginUser() {
+  return new Promise((resolve, reject) => {
+    console.log('Login user call');
+    hooks.push({
+      eventName: methods.RESOLVE_LOGIN,
+      fn: ({ result, error }) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      },
+    });
+    relay.loginUser();
+  });
+}
+
 // DEPRECATED
 // Legacy method that inserts a clickable button in container.
 // Use fully programmatic `collectNFT` OR pre-fabbed `button.ts`
