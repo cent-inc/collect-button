@@ -51,6 +51,7 @@ function _init(hooks) {
         method,
         params,
         result,
+        error,
       } = message.data;
       switch (method) {
         case methods.ASSET_STATUS:
@@ -66,6 +67,22 @@ function _init(hooks) {
           for (let i = hooks.length - 1; i >= 0; i--) {
             if (hooks[i].eventName === methods.HIDE_RELAY && hooks[i].assetURL === params.assetURL) {
               hooks.pop().fn(result);
+            }
+          }
+          break;
+        }
+        case methods.RESOLVE_COLLECTION: {
+          for (let i = hooks.length - 1; i >= 0; i--) {
+            if (hooks[i].eventName === methods.RESOLVE_COLLECTION) {
+              hooks.pop().fn({ result, success, error });
+            }
+          }
+          break;
+        }
+        case methods.RESOLVE_LOGIN: {
+          for (let i = hooks.length - 1; i >= 0; i--) {
+            if (hooks[i].eventName === methods.RESOLVE_LOGIN) {
+              hooks.pop().fn({ result, success, error });
             }
           }
           break;
@@ -100,6 +117,21 @@ export async function lookup(assetURLs) {
   sendPostMessage(methods.ASSET_STATUS, {
     assetURLs
   });
+}
+
+export async function getUserCollection({ email, limit=20, offset=0 }) {
+  await new Promise(waitForLoaded);
+  sendPostMessage(methods.GET_USER_COLLECTION, {
+    email,
+    limit,
+    offset,
+  });
+}
+
+export async function loginUser() {
+  await new Promise(waitForLoaded);
+  showRelayIFrame();
+  sendPostMessage(methods.USER_LOGIN);
 }
 
 export async function collect({ assetURL, assetTitle, assetDescription, autoCollect=true, autoExit=false }) {
