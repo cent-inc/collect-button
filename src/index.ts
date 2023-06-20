@@ -28,7 +28,7 @@ export function collectNFT({ url, title, description, onExit, autoCollect=true, 
   });
 }
 
-export function getUserCollection({ email, limit=20, offset=0 }) {
+function getUserCollection({ email, limit=20, offset=0 }) {
   return new Promise((resolve, reject) => {
     hooks.push({
       eventName: methods.RESOLVE_COLLECTION,
@@ -48,9 +48,8 @@ export function getUserCollection({ email, limit=20, offset=0 }) {
   });
 }
 
-export function loginUser() {
+function loginUser() {
   return new Promise((resolve, reject) => {
-    console.log('Login user call');
     hooks.push({
       eventName: methods.RESOLVE_LOGIN,
       fn: ({ result, error }) => {
@@ -63,6 +62,12 @@ export function loginUser() {
     });
     relay.loginUser();
   });
+}
+
+export const Cent = {
+  collectNFT,
+  loginUser,
+  getUserCollection,
 }
 
 // DEPRECATED
