@@ -68,7 +68,7 @@ export const cent = {
   collectNFT,
   loginUser,
   getUserCollection,
-}
+};
 
 // DEPRECATED
 // Legacy method that inserts a clickable button in container.
