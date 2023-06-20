@@ -64,7 +64,7 @@ function loginUser() {
   });
 }
 
-export const Cent = {
+export const cent = {
   collectNFT,
   loginUser,
   getUserCollection,

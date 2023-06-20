@@ -51,7 +51,7 @@
     </div>
     <script>
       function onGetUserCollection (email) {
-        window.Cent.getUserCollection({
+        window.cent.getUserCollection({
           email,
           limit: 20,
           offset: 0,
@@ -60,9 +60,9 @@
         }).catch((e) => {
           console.log('Error get user collection: ', e);
           if (e === 'User not found') {
-            window.Cent.loginUser()
+            window.cent.loginUser()
             .then((response) => {
-              window.Cent.getUserCollection({
+              window.cent.getUserCollection({
                 email: response.userEmail,
                 limit: 20,
                 offset: 0,
