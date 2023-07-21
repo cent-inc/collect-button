@@ -160,7 +160,7 @@ export function initCollectMode(relay) {
       }
     });
     if (newAssetUrls.length > 0) {
-      relay.private.lookupUrls(newAssetUrls);
+      relay.internal.lookupUrls(newAssetUrls);
     }
     Object.keys(collectButtonMap).forEach((key) => {
       const mb = collectButtonMap[key];
@@ -186,7 +186,7 @@ export function initCollectMode(relay) {
     });
   }
 
-  relay.private.addListener({
+  relay.internal.addListener({
     eventName: methods.ASSET_STATUS,
     callback: ({ result }) => {
       if (result) {

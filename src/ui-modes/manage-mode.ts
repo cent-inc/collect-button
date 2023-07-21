@@ -82,7 +82,7 @@ export function initManageMode(relay) {
                   button,
                   nonce,
                 });
-                button.setAttribute(attrs.ASSET_Url, src);
+                button.setAttribute(attrs.ASSET_URL, src);
               }
               button.style.top = Math.round(image.offsetTop + 7) + 'px';
               button.style.left = Math.round(image.offsetLeft + 6) + 'px';
@@ -101,7 +101,7 @@ export function initManageMode(relay) {
                   button,
                   nonce,
                 });
-                button.setAttribute(attrs.ASSET_Url, src);
+                button.setAttribute(attrs.ASSET_URL, src);
               }
               button.style.top = Math.round(image.offsetTop + 7) + 'px';
               button.style.left = Math.round(image.offsetLeft + 6) + 'px';
@@ -111,7 +111,7 @@ export function initManageMode(relay) {
       }
     });
     if (newAssetUrls.length > 0) {
-      relay.private.lookupUrls(newAssetUrls);
+      relay.internal.lookupUrls(newAssetUrls);
     }
     Object.keys(manageButtonMap).forEach((key) => {
       const mb = manageButtonMap[key];
@@ -129,8 +129,8 @@ export function initManageMode(relay) {
   function onClickManage(e) {
     e.stopPropagation();
     e.preventDefault();
-    relay.private.manageNFT(
-      this.getAttribute(attrs.ASSET_Url),
+    relay.internal.manageNFT(
+      this.getAttribute(attrs.ASSET_URL),
       showPreRelease(),
     );
   }
@@ -140,7 +140,7 @@ export function initManageMode(relay) {
   }
 
   newExitButton();
-  relay.private.addListener({
+  relay.internal.addListener({
     eventName: methods.ASSET_STATUS,
     callback: ({ result }) => {
       if (result) {
