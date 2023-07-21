@@ -64,6 +64,14 @@ const createCentRelay = () => {
             }
             break;
           }
+          case methods.GET_USER: {
+            for (let i = listeners.length - 1; i >= 0; i--) {
+              if (listeners[i].eventName === methods.GET_USER) {
+                listeners.pop().callback({ result, error });
+              }
+            }
+            break;
+          }
           case methods.GET_USER_COLLECTION: {
             for (let i = listeners.length - 1; i >= 0; i--) {
               if (listeners[i].eventName === methods.GET_USER_COLLECTION) {
@@ -75,6 +83,14 @@ const createCentRelay = () => {
           case methods.LOGIN_USER: {
             for (let i = listeners.length - 1; i >= 0; i--) {
               if (listeners[i].eventName === methods.LOGIN_USER) {
+                listeners.pop().callback({ result, error });
+              }
+            }
+            break;
+          }
+          case methods.SIGN_MESSAGE: {
+            for (let i = listeners.length - 1; i >= 0; i--) {
+              if (listeners[i].eventName === methods.SIGN_MESSAGE) {
                 listeners.pop().callback({ result, error });
               }
             }
