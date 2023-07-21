@@ -2,14 +2,14 @@ import {
   attrs,
   methods,
   MIN_DIM,
-} from './constants';
+} from '../constants';
 import {
-  getQueryVariable,
+  deactivateManager,
   showPreRelease,
   getMedia,
-} from './utils';
+} from '../utils';
 
-export function initManage(relay, hooks) {
+export function initManageMode(relay) {
   const manageButtonMap = {
    /*
     key: [{
@@ -52,14 +52,14 @@ export function initManage(relay, hooks) {
     const nonce = parseInt(Math.random() * 2_000_000_000);
     const scrollY = window.scrollY;
     const scrollX = window.scrollX;
-    const newAssetURLs = [];
+    const newAssetUrls = [];
     getMedia().forEach(image => {
       if (image.complete) {
         const rect = image.getBoundingClientRect();
         if (rect.width >= MIN_DIM && rect.height >= MIN_DIM) {
           const src = image.src;
           if (!manageButtonMap[src]) {
-            newAssetURLs.push(src);
+            newAssetUrls.push(src);
             manageButtonMap[src] = {
               type: 'image',
               checked: false,
@@ -82,7 +82,7 @@ export function initManage(relay, hooks) {
                   button,
                   nonce,
                 });
-                button.setAttribute(attrs.ASSET_URL, src);
+                button.setAttribute(attrs.ASSET_Url, src);
               }
               button.style.top = Math.round(image.offsetTop + 7) + 'px';
               button.style.left = Math.round(image.offsetLeft + 6) + 'px';
@@ -101,7 +101,7 @@ export function initManage(relay, hooks) {
                   button,
                   nonce,
                 });
-                button.setAttribute(attrs.ASSET_URL, src);
+                button.setAttribute(attrs.ASSET_Url, src);
               }
               button.style.top = Math.round(image.offsetTop + 7) + 'px';
               button.style.left = Math.round(image.offsetLeft + 6) + 'px';
@@ -110,8 +110,8 @@ export function initManage(relay, hooks) {
         }
       }
     });
-    if (newAssetURLs.length > 0) {
-      relay.lookup(newAssetURLs);
+    if (newAssetUrls.length > 0) {
+      relay.private.lookupUrls(newAssetUrls);
     }
     Object.keys(manageButtonMap).forEach((key) => {
       const mb = manageButtonMap[key];
@@ -129,22 +129,21 @@ export function initManage(relay, hooks) {
   function onClickManage(e) {
     e.stopPropagation();
     e.preventDefault();
-    relay.manage(
-      this.getAttribute(attrs.ASSET_URL),
+    relay.private.manageNFT(
+      this.getAttribute(attrs.ASSET_Url),
       showPreRelease(),
     );
   }
 
   function onClickExit() {
-    window.localStorage.removeItem('collect-manager');
-    window.location.href = window.location.href.replace('collectManager=', 'exit=');
+    deactivateManager();
   }
 
   newExitButton();
-  hooks.push({
+  relay.private.addListener({
     eventName: methods.ASSET_STATUS,
-    callback: ({ success, result }) => {
-      if (success) {
+    callback: ({ result }) => {
+      if (result) {
         result.forEach(r => {
           if (
             manageButtonMap[r.assetURL] &&

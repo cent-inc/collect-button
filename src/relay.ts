@@ -1,160 +1,183 @@
 import {
   methods,
+  centIFrameInlineCSS,
 } from './constants';
 
-let relayIFrame = null;
-let relayIFrameLoaded = false;
-export function init(hooks) {
-  if (
-    document.readyState === "complete" ||
-    document.readyState === "interactive"
-  ) {
-    _init(hooks);
-  }
-  else {
-    window.addEventListener('DOMContentLoaded', function () {
-      _init(hooks);
-    });
-  }
-}
-function _init(hooks) {
-  document.querySelectorAll('iframe').forEach(iframe => {
-    const src = iframe.src || '';
-    if (src.indexOf(process.env.CENT_RELAY_ROOT) === 0) {
-      relayIFrame = iframe;
+let centIFrame = null;
+let centIFrameLoaded = false;
+const listeners = [];
+
+export function init() {
+  const messageCent = (method, params) => centIFrame.contentWindow.postMessage(
+    { method, params }, process.env.CENT_RELAY_ROOT
+  );
+  const showCent = () => centIFrame.style.display = 'block';
+  const hideCent = () => centIFrame.style.display = 'none';
+  const loadCent = (resolve, reject) => {
+    if (!resolve) {
+      // First invocation, create the Promise and check immediately
+      return new Promise((res, rej) => setTimeout(() => loadCent(res, rej), 0));
+    } else if (centIFrameLoaded) {
+      resolve(centIFrameLoaded);
+    } else {
+      // TODO? Should we reject after a while?
+      setTimeout(() => loadCent(resolve, reject), 30); // Check every 30ms
     }
-  });
-
-  if (!relayIFrame) {
-    relayIFrame = document.createElement('iframe');
-    relayIFrame.src = `${process.env.CENT_RELAY_ROOT}/relay?origin=${encodeURIComponent(window.location.origin)}`;
-    relayIFrame.className = 'cent-relay';
-    relayIFrame.setAttribute('style', `
-      width: 100% !important;
-      height: 100% !important;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      z-index: 2147483647 !important;
-      border: 0 !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      display: none;
-    `)
-    document.body.appendChild(relayIFrame);
-  }
-
-  window.addEventListener('message', function (message) {
-    if (message.origin === process.env.CENT_RELAY_ROOT) {
-      const {
-        success,
-        method,
-        params,
-        result,
-        error,
-      } = message.data;
-      switch (method) {
-        case methods.ASSET_STATUS:
-          hooks
-          .filter(hook => hook.eventName === methods.ASSET_STATUS)
-          .forEach(hook => hook.callback({ result, success }));
-          break;
-        case methods.RELAY_HEARTBEAT:
-          relayIFrameLoaded = true;
-          break;
-        case methods.HIDE_RELAY: {
-          hideRelayIFrame();
-          for (let i = hooks.length - 1; i >= 0; i--) {
-            if (hooks[i].eventName === methods.HIDE_RELAY && hooks[i].assetURL === params.assetURL) {
-              hooks.pop().fn(result);
-            }
-          }
-          break;
-        }
-        case methods.RESOLVE_COLLECTION: {
-          for (let i = hooks.length - 1; i >= 0; i--) {
-            if (hooks[i].eventName === methods.RESOLVE_COLLECTION) {
-              hooks.pop().fn({ result, success, error });
-            }
-          }
-          break;
-        }
-        case methods.RESOLVE_LOGIN: {
-          for (let i = hooks.length - 1; i >= 0; i--) {
-            if (hooks[i].eventName === methods.RESOLVE_LOGIN) {
-              hooks.pop().fn({ result, success, error });
-            }
-          }
-          break;
-        }
-        default:
-          break;
+  };
+  const createCentRelay = () => {
+    document.querySelectorAll('iframe').forEach(iframe => {
+      if ((iframe.src || '').indexOf(process.env.CENT_RELAY_ROOT) === 0) {
+        centIFrame = iframe;
       }
+    });
+    if (!centIFrame) {
+      centIFrame = document.createElement('iframe');
+      centIFrame.src = `${process.env.CENT_RELAY_ROOT}/relay?origin=${encodeURIComponent(window.location.origin)}`;
+      centIFrame.setAttribute('style', centIFrameInlineCSS);
+      document.body.appendChild(centIFrame);
+      window.addEventListener('message', (message) => {
+        if (message.origin === process.env.CENT_RELAY_ROOT) {
+          const {
+            method,
+            params,
+            result,
+            error,
+          } = message.data;
+          switch (method) {
+            case methods.ASSET_STATUS:
+              listeners
+              .filter(listener => listener.eventName === methods.ASSET_STATUS)
+              .forEach(listener => listener.callback({ result }));
+              break;
+            case methods.RELAY_HEARTBEAT:
+              centIFrameLoaded = true;
+              break;
+            case methods.CLOSE_SDK: {
+              hideCent();
+              for (let i = listeners.length - 1; i >= 0; i--) {
+                if (listeners[i].eventName === methods.CLOSE_SDK && listeners[i].assetURL === params.assetURL) {
+                  listeners.pop().callback(result);
+                }
+              }
+              break;
+            }
+            case methods.GET_USER_COLLECTION: {
+              for (let i = listeners.length - 1; i >= 0; i--) {
+                if (listeners[i].eventName === methods.GET_USER_COLLECTION) {
+                  listeners.pop().callback({ result, error });
+                }
+              }
+              break;
+            }
+            case methods.LOGIN_USER: {
+              for (let i = listeners.length - 1; i >= 0; i--) {
+                if (listeners[i].eventName === methods.LOGIN_USER) {
+                  listeners.pop().callback({ result, error });
+                }
+              }
+              break;
+            }
+            default:
+              break;
+          }
+        }
+      });
     }
-  });
-}
+  };
 
-
-function showRelayIFrame() {
-  relayIFrame.style.display = 'block';
-}
-
-function hideRelayIFrame() {
-  relayIFrame.style.display = 'none';
-}
-
-function waitForLoaded(resolve, reject) {
-  if (relayIFrameLoaded) {
-    resolve(relayIFrameLoaded);
+  // Kick off initialization once the page is loaded
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    createCentRelay();
+  } else {
+    window.addEventListener('DOMContentLoaded', createCentRelay);
   }
-  else {
-    setTimeout(waitForLoaded.bind(this, resolve, reject), 30);
+
+  return {
+    private: {
+      manageNFT: async (assetURL, showPreRelease) => {
+        await loadCent();
+        showCent();
+        messageCent(methods.MANAGE_ASSET, {
+          assetURL,
+          showPreRelease,
+        });
+      },
+      lookupUrls: async (assetURLs) => {
+        await loadCent();
+        messageCent(methods.ASSET_STATUS, {
+          assetURLs
+        });
+      },
+      addListener: ({ eventName, callback }) => {
+        listeners.push({ eventName, callback });
+      },
+    },
+    public: {
+      getUserCollection: async ({ email, limit=20, offset=0 }) => {
+        await loadCent();
+        return new Promise(async (resolve, reject) => {
+          listeners.push({
+            eventName: methods.GET_USER_COLLECTION,
+            callback: ({ result, error }) => error ? reject(error) : resolve(result),
+          });
+          messageCent(methods.GET_USER_COLLECTION, {
+            email,
+            limit,
+            offset,
+          });
+        });
+      },
+      loginUser: async () => {
+        await loadCent();
+        return new Promise(async (resolve, reject) => {
+          listeners.push({
+            eventName: methods.LOGIN_USER,
+            callback: ({ result, error }) => error ? reject(error) : resolve(result),
+          });
+          showCent();
+          messageCent(methods.LOGIN_USER);
+        });
+      },
+      getUser: async () => {
+        await loadCent();
+        return new Promise(async (resolve, reject) => {
+          listeners.push({
+            eventName: methods.GET_USER,
+            callback: ({ result, error }) => error ? reject(error) : resolve(result),
+          });
+          messageCent(methods.GET_USER);
+        });
+      },
+      signMessage: async ({ message }) => {
+        await loadCent();
+        return new Promise(async (resolve, reject) => {
+          listeners.push({
+            eventName: methods.SIGN_MESSAGE,
+            callback: ({ result, error }) => error ? reject(error) : resolve(result),
+          });
+          messageCent(methods.SIGN_MESSAGE, {
+            message,
+          });
+        });
+      },
+      collectNFT: async ({ url, title, description, onExit, autoCollect=true, autoExit=false }) => {
+        await loadCent();
+        if (typeof onExit === 'function') {
+          listeners.push({
+            eventName: methods.CLOSE_SDK,
+            assetURL: url,
+            callback: onExit,
+          });
+        }
+        showCent();
+        messageCent(methods.COLLECT_ASSET, {
+          assetURL: url,
+          assetTitle: title,
+          assetDescription: description,
+          autoCollect,
+          autoExit,
+        });
+      },
+    },
   }
-}
-
-export async function lookup(assetURLs) {
-  await new Promise(waitForLoaded);
-  sendPostMessage(methods.ASSET_STATUS, {
-    assetURLs
-  });
-}
-
-export async function getUserCollection({ email, limit=20, offset=0 }) {
-  await new Promise(waitForLoaded);
-  sendPostMessage(methods.GET_USER_COLLECTION, {
-    email,
-    limit,
-    offset,
-  });
-}
-
-export async function loginUser() {
-  await new Promise(waitForLoaded);
-  showRelayIFrame();
-  sendPostMessage(methods.USER_LOGIN);
-}
-
-export async function collect({ assetURL, assetTitle, assetDescription, autoCollect=true, autoExit=false }) {
-  await new Promise(waitForLoaded);
-  showRelayIFrame();
-  sendPostMessage(methods.COLLECT_ASSET, {
-    assetURL,
-    assetTitle,
-    assetDescription,
-    autoCollect,
-    autoExit,
-  });
-}
-
-export async function manage(assetURL, showPreRelease) {
-  await new Promise(waitForLoaded);
-  showRelayIFrame();
-  sendPostMessage(methods.MANAGE_ASSET, {
-    assetURL,
-    showPreRelease,
-  });
-}
-
-function sendPostMessage(method, params) {
-  relayIFrame.contentWindow.postMessage({ method, params }, process.env.CENT_RELAY_ROOT);
 }
