@@ -50,7 +50,7 @@ const createCentRelay = () => {
           case methods.ASSET_STATUS:
             listeners
             .filter(listener => listener.eventName === methods.ASSET_STATUS)
-            .forEach(listener => listener.callback({ result }));
+            .forEach(listener => listener.callback({ result, error }));
             break;
           case methods.RELAY_HEARTBEAT:
             centIFrameLoaded = true;
@@ -59,7 +59,7 @@ const createCentRelay = () => {
             hideCent();
             for (let i = listeners.length - 1; i >= 0; i--) {
               if (listeners[i].eventName === methods.CLOSE_SDK && listeners[i].assetURL === params.assetURL) {
-                listeners.pop().callback(result);
+                listeners.pop().callback({ result, error });
               }
             }
             break;
@@ -75,14 +75,6 @@ const createCentRelay = () => {
           case methods.GET_USER_COLLECTION: {
             for (let i = listeners.length - 1; i >= 0; i--) {
               if (listeners[i].eventName === methods.GET_USER_COLLECTION) {
-                listeners.pop().callback({ result, error });
-              }
-            }
-            break;
-          }
-          case methods.LOGIN_USER: {
-            for (let i = listeners.length - 1; i >= 0; i--) {
-              if (listeners[i].eventName === methods.LOGIN_USER) {
                 listeners.pop().callback({ result, error });
               }
             }
@@ -151,7 +143,7 @@ export function init() {
         await loadCent();
         return new Promise(async (resolve, reject) => {
           listeners.push({
-            eventName: methods.LOGIN_USER,
+            eventName: methods.CLOSE_SDK,
             callback: ({ result, error }) => error ? reject(error) : resolve(result),
           });
           showCent();
@@ -182,21 +174,28 @@ export function init() {
       },
       collectNFT: async ({ url, title, description, onExit, autoCollect=true, autoExit=false }) => {
         await loadCent();
-        if (typeof onExit === 'function') {
+        return new Promise(async (resolve, reject) => {
+          if (typeof onExit === 'function') {
+            listeners.push({
+              eventName: methods.CLOSE_SDK,
+              assetURL: url,
+              callback: ({ result }) => onExit(result),
+            });
+          }
           listeners.push({
             eventName: methods.CLOSE_SDK,
             assetURL: url,
-            callback: onExit,
+            callback: ({ result, error }) => error ? reject(error) : resolve(result),
           });
-        }
-        showCent();
-        messageCent(methods.COLLECT_ASSET, {
-          assetURL: url,
-          assetTitle: title,
-          assetDescription: description,
-          autoCollect,
-          autoExit,
-        });
+          showCent();
+          messageCent(methods.COLLECT_ASSET, {
+            assetURL: url,
+            assetTitle: title,
+            assetDescription: description,
+            autoCollect,
+            autoExit,
+          });
+        })
       },
     },
   }
