@@ -16,6 +16,25 @@ export function isTouchDevice() {
      (navigator.msMaxTouchPoints > 0));
 }
 
+export function activateManager() {
+  if (getQueryVariable('collectManager')) {
+    // Activate the manager and strip query string directive from the url.
+    window.localStorage.setItem('collect-manager', 'true');
+    window.location.replace(window.location.href.replace('collectManager=1', ''));
+    return true;
+  }
+  return false;
+}
+
+export function deactivateManager() {
+  window.localStorage.removeItem('collect-manager');
+  window.location.href = window.location.href.replace('collectManager=', 'exit=');
+}
+
+export function managerActivated() {
+  return window.localStorage.getItem('collect-manager') === 'true';
+}
+
 export function getQueryVariable(variable) {
   const query = window.location.search.substring(1);
   const vars = query.split('&');
