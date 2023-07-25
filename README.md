@@ -3,9 +3,9 @@
 The Collect Button makes anything on your site collectible by anyone. Using the SDK, you can choose what to make collectable, with support currently for images, videos, and audio files. We are constantly updating the capabilities, so be sure to check back for updates. You can also reach out to us with feature requests at hello@cent.co
 
 ## Setup
-1. Register for a cent account: https://cent.co. This account will be associated with all NFTs created with your site.
+1. Register for a cent account: https://app.cent.co. This account will be associated with all NFTs created with your site.
 
-2. Register your site: https://cent.co/join/tcb.
+2. Register your site: https://app.cent.co/join/tcb.
 
 3. Add the SDK via script tag to your site (see section below for instructions).
 
@@ -79,7 +79,7 @@ When a user collects NFTs on your site, they interact with Cent though a series 
 3. Mint the asset to the user's wallet.
 4. Displs a confirmation message and sends a confirmation email.
 
-The SDK integrator can access the email address of the collector by logging into the Cent Platform (cent.co) and viewing the asset collected.
+The SDK integrator can access the email address of the collector by logging into the Cent Platform (app.cent.co) and viewing the asset collected.
 
 ## Feature ideas (in no apparent order)
 - [ ] Style/theming for Collect flow
