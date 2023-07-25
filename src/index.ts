@@ -1,129 +1,41 @@
 import {
   attrs,
   methods,
+  legacyCollectButtonInlineCSS,
 } from './constants';
 import './styles/index.css'
-import * as relay from './relay';
-import { initManage } from './manage';
-import { getQueryVariable } from './utils';
+import { activateManager, managerActivated } from './utils';
+import { initManageMode } from './ui-modes/manage-mode';
+import * as Relay from './relay';
 
-const hooks = [];
-relay.init(hooks);
-
-
-export function collectNFT({ url, title, description, onExit, autoCollect=true, autoExit=false }) {
-  if (typeof onExit === 'function') {
-    hooks.push({
-      eventName: methods.HIDE_RELAY,
-      assetURL: url,
-      fn: onExit,
-    });
+let relay = {};
+if (!activateManager()) {
+  relay = Relay.init();
+  if (managerActivated()) {
+    initManageMode(relay);
   }
-  relay.collect({
-    assetURL: url,
-    assetTitle: title,
-    assetDescription: description,
-    autoCollect: autoCollect,
-    autoExit: autoExit,
-  });
 }
 
-function getUserCollection({ email, limit=20, offset=0 }) {
-  return new Promise((resolve, reject) => {
-    hooks.push({
-      eventName: methods.RESOLVE_COLLECTION,
-      fn: ({ result, success, error }) => {
-        if (success) {
-          resolve(result);
-        } else {
-          reject(error);
-        }
-      },
-    });
-    relay.getUserCollection({
-      email,
-      limit,
-      offset,
-    });
-  });
-}
+export const cent = { ...relay.public };
 
-function loginUser() {
-  return new Promise((resolve, reject) => {
-    hooks.push({
-      eventName: methods.RESOLVE_LOGIN,
-      fn: ({ result, error }) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      },
-    });
-    relay.loginUser();
-  });
-}
+// Legacy standalone collect API
+export const collectNFT = (...args) => relay.public.collectNFT(...args);
 
-export const cent = {
-  collectNFT,
-  loginUser,
-  getUserCollection,
-};
-
-// DEPRECATED
 // Legacy method that inserts a clickable button in container.
-// Use fully programmatic `collectNFT` OR pre-fabbed `button.ts`
-export function createCollectButton (params, container) {
-  function onClickHandler() {
-    collectNFT({
+export function createCollectButton ({ assetURL, assetTitle, assetDescription, buttonText }, container) {
+  const button = document.createElement('button');
+  button.setAttribute(attrs.ASSET_URL, assetURL);
+  button.setAttribute(attrs.ASSET_TITLE, assetTitle);
+  button.setAttribute(attrs.ASSET_DESCRIPTION, assetDescription);
+  button.innerText = buttonText || 'Collect';
+  button.className = 'collect-button';
+  button.setAttribute('style', legacyCollectButtonInlineCSS);
+  button.addEventListener('click', function() {
+    relay.public.collectNFT({
       url: this.getAttribute(attrs.ASSET_URL),
       title: this.getAttribute(attrs.ASSET_TITLE),
       description: this.getAttribute(attrs.ASSET_DESCRIPTION)
     });
-  }
-  const button = document.createElement('button');
-  button.setAttribute(attrs.ASSET_URL, params.assetURL);
-  button.setAttribute(attrs.ASSET_TITLE, params.assetTitle);
-  button.setAttribute(attrs.ASSET_DESCRIPTION, params.assetDescription);
-  button.innerText = params.buttonText || 'Collect';
-  button.className = 'collect-button';
-  button.setAttribute('style', `
-    position: relative;
-    font-size: 1em;
-    padding: .5em 1em;
-    background-color: #000;
-    color: #FFF;
-    border: 1px solid black;
-    border-radius: 6px;
-    cursor: pointer;
-  `);
-  button.addEventListener('click', onClickHandler);
+  });
   container.appendChild(button);
-}
-
-function init() {
-  const activateManager = getQueryVariable('collectManager');
-  if (activateManager) {
-    // Activate the manager and strip query string directive from the url.
-    window.localStorage.setItem('collect-manager', 'true');
-    const { location } = window;
-    const qsFragments = location.search.substr(1).split('&').filter(key => key.indexOf('collectManager') !== 0);
-    const newQs = qsFragments.length > 0 ? `?${qsFragments.join('&')}` : '';
-    location.replace(`${location.origin}${location.pathname}${newQs}${location.hash}`);
-    return;
-  }
-  const managerActivated = window.localStorage.getItem('collect-manager') === 'true';
-  if (managerActivated) {
-    initManage(relay, hooks);
-  }
-}
-
-if (
-  document.readyState === "complete" ||
-  document.readyState === "interactive"
-) {
-  init();
-}
-else {
-  window.addEventListener('DOMContentLoaded', init);
 }

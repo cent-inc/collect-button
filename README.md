@@ -1,6 +1,6 @@
-# Collect Button
+# The Collect Button SDK
 
-The Collect Button makes anything on your site collectible by anyone. Using the SDK, you can choose what to make collectable, with support currently for images, videos, and audio files. We are constantly updating the capabilities, so be sure to check back for updates. You can also reach out to us with feature requests at hello@cent.co
+Using the SDK, sites can make any asset collectable for their audiences. Cent currently supports images, videos, and audio files. Reach out to the team with feature requests at hello@cent.co or feel free to open an issue on GitHub.
 
 ## Setup
 1. Register for a cent account: https://cent.co. This account will be associated with all NFTs created with your site.
@@ -11,13 +11,13 @@ The Collect Button makes anything on your site collectible by anyone. Using the 
 
 Once these steps are complete, you will have full collectible functionality enabled on your domain.
 
-## Modes of operation
+## Adding the script tag
 
-The Collect button SDK currently offers two modes of operation, a Default mode and a Headless mode. Headless mode allows you to programmatically trigger collect flows using functions in the SDK. Default mode includes the APIs in Headless mode **and** also automatically overlays Cent's Collect buttons on assets that are collectible.
+The SDK currently offers a set of APIs that trigger Cent UIs when invoked.
 
-Which mode you use is dependent on the script tag you add to the `HEAD` of your site:
+To have the SDK attach Collect Buttons automatically to your assets, add the Collect UI mode script _in lieu_ of the headless mode script:
 
-### Default mode
+### Collect UI mode
 
 ```
 <script src="https://sdk.cent.co/dist/button.js"></script>
@@ -31,25 +31,39 @@ Which mode you use is dependent on the script tag you add to the `HEAD` of your 
 
 ### Collect API
 
-Both modes attach a global method to the `window` object `collectNFT`.
+Both modes export `cent` object with the following APIs
 
 ```
-window.collectNFT({
+collectNFT({
   url: string,
   autoCollect=true: boolean,
   autoExit=false: boolean,
   onExit: function ({
-    maxCollectTotal: numberm
+    maxCollectTotal: number,
     oldCollectTotal: number,
     newCollectTotal: number,
     oldUserCollectTotal: number,
     newUserCollectTotal: number,
     userEmail: string
   })
-});
+}) => Promise<Result>
+
+signMessage({
+  message: string
+}) => Promise<Result>
+
+getUser() => Promise<Result>
+
+loginUser() => Promise<Result>
+
+getUserCollection({
+  email: string,
+  limit=20: number,
+  offset=0: number
+}) => Promise<Result>
 ```
 
-If the account has create-on-demand functionality enabled, this function can create a new collectible type by passing additional object parameters `title: string, description: string`. Each type is uniquely identified by the `url`. If a type already exists, a new type will not be created and `title` and `description` will be ignore. This feature is manually enabled per-account; please reach out to `hello@cent.co` if you would like it enabled.
+Each collectible asset is uniquely identified by the `url` on the partner site. If a collectible with that url already exists, a new type will not be created and `title` and `description` will be ignored.
 
 ## Management interface
 
