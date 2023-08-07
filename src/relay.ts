@@ -37,7 +37,13 @@ const createCentRelay = () => {
     centIFrame = document.createElement('iframe');
     centIFrame.src = `${process.env.CENT_RELAY_ROOT}/relay?origin=${encodeURIComponent(window.location.origin)}`;
     centIFrame.setAttribute('style', centIFrameInlineCSS);
-    document.body.appendChild(centIFrame);
+    const wixComponent = document.body.querySelectorAll('div[data-hook="bottom-placeholder"]');
+    if (wixComponent && wixComponent.length > 0) {
+      console.log('HERE');
+      wixComponent[0].appendChild(centIFrame);
+    } else {
+      document.body.appendChild(centIFrame);
+    }
     window.addEventListener('message', (message) => {
       if (message.origin === process.env.CENT_RELAY_ROOT) {
         const {
