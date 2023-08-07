@@ -39,7 +39,6 @@ const createCentRelay = () => {
     centIFrame.setAttribute('style', centIFrameInlineCSS);
     const wixComponent = document.body.querySelectorAll('div[data-hook="bottom-placeholder"]');
     if (wixComponent && wixComponent.length > 0) {
-      console.log('HERE');
       wixComponent[0].appendChild(centIFrame);
     } else {
       document.body.appendChild(centIFrame);
