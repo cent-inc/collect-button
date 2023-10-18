@@ -19,6 +19,7 @@ const config: Configuration = {
   entry: {
     button: './src/button.ts',
     index: './src/index.ts',
+    shopify: './src/shopify.ts',
   },
   module: {
     rules: [

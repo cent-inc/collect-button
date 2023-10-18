@@ -10,6 +10,7 @@ const config: Configuration = {
   entry: {
     button: './src/button.ts',
     index: './src/index.ts',
+    shopify: './src/shopify.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
